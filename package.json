@@ -1,0 +1,32 @@
+{
+  "name": "causal-tree-ts",
+  "version": "1.0.0",
+  "description": "Typescript implementation of causal tree (CRDT)",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx nodemon --watch src/ --exec npx ts-node -r dotenv/config src/app.ts -e ts",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crdteam/causal-tree-ts.git"
+  },
+  "keywords": [
+    "crdt",
+    "causal",
+    "tree",
+    "node"
+  ],
+  "author": "@samuelv8",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/crdteam/causal-tree-ts/issues"
+  },
+  "homepage": "https://github.com/crdteam/causal-tree-ts#readme",
+  "devDependencies": {
+    "@types/node": "^18.13.0",
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  }
+}
