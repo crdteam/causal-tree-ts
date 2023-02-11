@@ -1,4 +1,4 @@
-import { value1, value2 } from "./constants";
+import { value1, value2 } from './constants';
 
 export function doStuff() {
   return value1 + value2;

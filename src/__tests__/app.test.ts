@@ -1,4 +1,4 @@
-import { doStuff } from "../app";
+import { doStuff } from '../app';
 
 describe('app', () => {
   describe('doStuff', () => {
