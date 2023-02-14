@@ -1,0 +1,49 @@
+{
+  "name": "causal-tree-ts",
+  "version": "1.0.0",
+  "description": "Typescript implementation of causal tree (CRDT)",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx tsc -p tsconfig.json",
+    "start": "node -r dotenv/config dist/app.js",
+    "dev": "npx nodemon --watch src/ --exec npx ts-node -r dotenv/config src/app.ts -e ts",
+    "test": "npx jest --watch",
+    "test:cov": "npx jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crdteam/causal-tree-ts.git"
+  },
+  "keywords": [
+    "crdt",
+    "causal",
+    "tree",
+    "node"
+  ],
+  "author": "@samuelv8",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/crdteam/causal-tree-ts/issues"
+  },
+  "homepage": "https://github.com/crdteam/causal-tree-ts#readme",
+  "devDependencies": {
+    "@types/jest": "^29.4.0",
+    "@types/node": "^18.13.0",
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
+    "@typescript-eslint/parser": "^5.51.0",
+    "eslint": "^8.33.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-node": "^11.1.0",
+    "jest": "^29.4.2",
+    "nodemon": "^2.0.20",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.0.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3"
+  }
+}
