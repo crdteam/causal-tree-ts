@@ -1,3 +1,5 @@
+import IndexMap from './IndexMap';
+
 export default class AtomID {
   site: number;
 
@@ -14,6 +16,10 @@ export default class AtomID {
   static compare(a: AtomID, b: AtomID): number {
     if (a.timestamp === b.timestamp) return b.site - a.site;
     return a.timestamp - b.timestamp;
+  }
+
+  static remapSite(id: AtomID, map: IndexMap): AtomID {
+    return new AtomID(map.get(id.site), id.index, id.timestamp);
   }
 
   toString(): string {

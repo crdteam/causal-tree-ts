@@ -1,4 +1,5 @@
 import AtomID from './AtomID';
+import IndexMap from './IndexMap';
 import type { AtomValue } from './types';
 
 export default class Atom {
@@ -19,6 +20,14 @@ export default class Atom {
     const bPriority = b.value.priority;
     if (aPriority === bPriority) return AtomID.compare(a.id, b.id);
     return aPriority - bPriority;
+  }
+
+  static remapSite(atom: Atom, map: IndexMap): Atom {
+    return new Atom(
+      AtomID.remapSite(atom.id, map),
+      AtomID.remapSite(atom.cause, map),
+      atom.value,
+    );
   }
 
   toString(): string {
