@@ -1,16 +1,14 @@
 {
     "env": {
         "browser": true,
-        "es2021": true
+        "node": true
     },
     "extends": [
-        "airbnb-base",
-        "airbnb-typescript/base",
         "eslint:recommended",
-        "plugin:node/recommended",
-        "plugin:@typescript-eslint/recommended"
+        "plugin:@typescript-eslint/recommended",
+        "airbnb-base",
+        "airbnb-typescript/base"
     ],
-    "overrides": [],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "project": "./tsconfig.json",
@@ -20,21 +18,132 @@
     "plugins": [
         "@typescript-eslint"
     ],
-    "ignorePatterns": ["*.config.ts"],
+    "ignorePatterns": [
+        "*.config.ts"
+    ],
     "rules": {
-        "no-console": "warn",
-        "no-process-env": "off",
+        "import/extensions": [
+            "error",
+            "ignorePackages",
+            {
+                "js": "never",
+                "ts": "never"
+            }
+        ],
         "import/prefer-default-export": "off",
-        "node/no-process-env": "off",
-        "node/no-unsupported-features/es-syntax": "off",
-        "node/no-unpublished-import": "off",
-        "node/no-missing-import": [
+        "import/no-extraneous-dependencies": [
             "error",
             {
-                "tryExtensions": [
-                    ".ts"
+                "devDependencies": [
+                    "**/*.test.ts",
+                    "**/*jest*",
+                    "**/*[mM]ock*"
                 ]
             }
-        ]
-    }
+        ],
+        "@typescript-eslint/return-await": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": "warn",
+        "@typescript-eslint/restrict-template-expressions": [
+            "error",
+            {
+                "allowNumber": true,
+                "allowBoolean": true
+            }
+        ],
+        "@typescript-eslint/member-ordering": "error",
+        "@typescript-eslint/consistent-type-definitions": "error",
+        "no-console": "warn",
+        "no-self-compare": "error",
+        "no-template-curly-in-string": "error",
+        "require-atomic-updates": "error",
+        "class-methods-use-this": "error",
+        "default-case-last": "error",
+        "no-alert": "error",
+        "no-else-return": [
+            "error",
+            {
+                "allowElseIf": false
+            }
+        ],
+        "no-magic-numbers": [
+            "error",
+            {
+                "ignoreArrayIndexes": true,
+                "ignore": [
+                    0,
+                    1,
+                    -1
+                ]
+            }
+        ],
+        "no-shadow": "error",
+        "no-useless-return": "error",
+        "strict": "error",
+        "yoda": "error",
+        "array-bracket-newline": "error",
+        "block-spacing": "error",
+        "comma-spacing": "error",
+        "computed-property-spacing": "error",
+        "dot-location": [
+            "error",
+            "property"
+        ],
+        "func-call-spacing": "error",
+        "function-call-argument-newline": [
+            "error",
+            "consistent"
+        ],
+        "implicit-arrow-linebreak": "error",
+        "key-spacing": "error",
+        "linebreak-style": "error",
+        "multiline-ternary": [
+            "error",
+            "always-multiline"
+        ],
+        "new-parens": "error",
+        "no-multiple-empty-lines": "error",
+        "no-tabs": "error",
+        "no-trailing-spaces": "error",
+        "object-curly-newline": [
+            "error",
+            {
+                "consistent": true
+            }
+        ],
+        "padding-line-between-statements": [
+            "error",
+            {
+                "blankLine": "always",
+                "prev": "block-like",
+                "next": "*"
+            },
+            {
+                "blankLine": "always",
+                "prev": "*",
+                "next": [
+                    "class",
+                    "function",
+                    "export"
+                ]
+            }
+        ],
+        "rest-spread-spacing": "error",
+        "semi-style": "error",
+        "space-unary-ops": "error",
+        "switch-colon-spacing": "error",
+        "wrap-regex": "error"
+    },
+    "overrides": [
+        {
+            "files": [
+                "**/__tests__/*",
+                "**/__seed__/*",
+                "**/seeders/*"
+            ],
+            "rules": {
+                "no-magic-numbers": "off"
+            }
+        }
+    ]
 }
