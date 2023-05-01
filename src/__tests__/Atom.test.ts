@@ -1,5 +1,5 @@
-import { Atom } from '../atom';
-import { AtomID } from '../atomID';
+import Atom from '../Atom';
+import AtomID from '../AtomID';
 
 describe('Atom', () => {
   describe('toString', () => {

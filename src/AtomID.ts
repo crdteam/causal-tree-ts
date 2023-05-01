@@ -1,4 +1,4 @@
-export class AtomID {
+export default class AtomID {
   site: number;
 
   index: number;
@@ -11,12 +11,12 @@ export class AtomID {
     this.timestamp = timestamp;
   }
 
-  toString(): string {
-    return `S${this.site}@T${this.timestamp}`;
-  }
-
   static compare(a: AtomID, b: AtomID): number {
     if (a.timestamp === b.timestamp) return b.site - a.site;
     return a.timestamp - b.timestamp;
+  }
+
+  toString(): string {
+    return `S${this.site}@T${this.timestamp}`;
   }
 }

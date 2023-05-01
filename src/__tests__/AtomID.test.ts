@@ -1,4 +1,4 @@
-import { AtomID } from '../atomID';
+import AtomID from '../AtomID';
 
 describe('Atom', () => {
   describe('toString', () => {
