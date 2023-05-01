@@ -1,15 +1,15 @@
-import AtomID from './AtomID';
+import AtomId from './AtomId';
 import IndexMap from './IndexMap';
 import type { AtomValue } from './types';
 
 export default class Atom {
-  id: AtomID;
+  id: AtomId;
 
-  cause: AtomID;
+  cause: AtomId;
 
   value: AtomValue;
 
-  constructor(id: AtomID, cause: AtomID, value: AtomValue) {
+  constructor(id: AtomId, cause: AtomId, value: AtomValue) {
     this.id = id;
     this.cause = cause;
     this.value = value;
@@ -18,14 +18,14 @@ export default class Atom {
   static compare(a: Atom, b: Atom): number {
     const aPriority = a.value.priority;
     const bPriority = b.value.priority;
-    if (aPriority === bPriority) return AtomID.compare(a.id, b.id);
+    if (aPriority === bPriority) return AtomId.compare(a.id, b.id);
     return aPriority - bPriority;
   }
 
   static remapSite(atom: Atom, map: IndexMap): Atom {
     return new Atom(
-      AtomID.remapSite(atom.id, map),
-      AtomID.remapSite(atom.cause, map),
+      AtomId.remapSite(atom.id, map),
+      AtomId.remapSite(atom.cause, map),
       atom.value,
     );
   }

@@ -1,12 +1,12 @@
 import Atom from '../Atom';
 import IndexMap from '../IndexMap';
-import getAtomID from '../utils/factories/AtomID';
+import getAtomId from '../utils/factories/AtomId';
 
 describe('Atom', () => {
   describe('toString', () => {
     it('should print according to defined format', () => {
-      const newId = getAtomID(0, 1, 2);
-      const causeId = getAtomID(0, 0, 1);
+      const newId = getAtomId(0, 1, 2);
+      const causeId = getAtomId(0, 0, 1);
       const value = {
         content: 'test',
         priority: 10,
@@ -22,8 +22,8 @@ describe('Atom', () => {
   });
   describe('compare', () => {
     it('should compare correctly: ascending on priority and id', () => {
-      const newId1 = getAtomID(0, 1, 2);
-      const causeId1 = getAtomID(0, 0, 1);
+      const newId1 = getAtomId(0, 1, 2);
+      const causeId1 = getAtomId(0, 0, 1);
       const value1 = {
         content: 'test-1',
         priority: 10,
@@ -34,8 +34,8 @@ describe('Atom', () => {
         causeId1,
         value1,
       );
-      const newId2 = getAtomID(1, 1, 2);
-      const causeId2 = getAtomID(1, 0, 1);
+      const newId2 = getAtomId(1, 1, 2);
+      const causeId2 = getAtomId(1, 0, 1);
       const value2 = {
         content: 'test-2',
         priority: 100,
@@ -46,8 +46,8 @@ describe('Atom', () => {
         causeId2,
         value2,
       );
-      const newId3 = getAtomID(0, 2, 3);
-      const causeId3 = getAtomID(0, 1, 2);
+      const newId3 = getAtomId(0, 2, 3);
+      const causeId3 = getAtomId(0, 1, 2);
       const value3 = {
         content: 'test-3',
         priority: 10,
@@ -66,8 +66,8 @@ describe('Atom', () => {
   });
   describe('remapSite', () => {
     it('should return a new atom using given index map to both id and cause atom ids', () => {
-      const id = getAtomID();
-      const causeId = getAtomID(id.site);
+      const id = getAtomId();
+      const causeId = getAtomId(id.site);
       const value = {
         content: 'test',
         priority: 10,

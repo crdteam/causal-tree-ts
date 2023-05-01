@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import AtomID from '../../AtomID';
+import AtomId from '../../AtomId';
 
 const MAX_SITE = 1000;
 
@@ -7,9 +7,9 @@ export default (
   site?: number,
   index?: number,
   timestamp?: number,
-): AtomID => {
+): AtomId => {
   const atomSite = site ?? faker.datatype.number(MAX_SITE);
   const atomIndex = index ?? faker.datatype.number();
   const atomTimestamp = timestamp ?? faker.datatype.number();
-  return new AtomID(atomSite, atomIndex, atomTimestamp);
+  return new AtomId(atomSite, atomIndex, atomTimestamp);
 };
