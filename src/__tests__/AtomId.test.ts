@@ -26,14 +26,14 @@ describe('Atom', () => {
       const map = new IndexMap();
       const newSiteIndex = 5;
       map.set(id.site, newSiteIndex);
-      const mappedId = AtomId.remapSite(id, map);
+      const mappedId = id.remapSite(map);
       expect(mappedId).not.toBe(id);
       expect(mappedId.site).toEqual(newSiteIndex);
     });
     it('should return an new equal atom id if index map has no entries', () => {
       const id = getAtomID();
       const map = new IndexMap();
-      const mappedId = AtomId.remapSite(id, map);
+      const mappedId = id.remapSite(map);
       expect(mappedId).not.toBe(id);
       expect(mappedId.toString()).toMatch(id.toString());
     });

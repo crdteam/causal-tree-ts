@@ -22,11 +22,11 @@ export default class Atom {
     return aPriority - bPriority;
   }
 
-  static remapSite(atom: Atom, map: IndexMap): Atom {
+  remapSite(map: IndexMap): Atom {
     return new Atom(
-      AtomId.remapSite(atom.id, map),
-      AtomId.remapSite(atom.cause, map),
-      atom.value,
+      this.id.remapSite(map),
+      this.cause.remapSite(map),
+      this.value,
     );
   }
 

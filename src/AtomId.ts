@@ -18,8 +18,8 @@ export default class AtomId {
     return a.timestamp - b.timestamp;
   }
 
-  static remapSite(id: AtomId, map: IndexMap): AtomId {
-    return new AtomId(map.get(id.site), id.index, id.timestamp);
+  remapSite(map: IndexMap): AtomId {
+    return new AtomId(map.get(this.site), this.index, this.timestamp);
   }
 
   toString(): string {

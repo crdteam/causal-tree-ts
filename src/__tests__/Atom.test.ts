@@ -43,7 +43,7 @@ describe('Atom', () => {
       const map = new IndexMap();
       const newSiteIndex = 5;
       map.set(atom.id.site, newSiteIndex);
-      const mappedAtom = Atom.remapSite(atom, map);
+      const mappedAtom = atom.remapSite(map);
       expect(mappedAtom).not.toBe(atom);
       expect(mappedAtom.id.site).toEqual(newSiteIndex);
       expect(mappedAtom.cause.site).toEqual(newSiteIndex);
