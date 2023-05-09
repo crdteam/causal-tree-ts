@@ -3,7 +3,7 @@ import type Atom from '../Atom';
 
 export const getNewUuid = (): string => uuidv1();
 
-export const causalBlockLenght = (block: Atom[]): number => {
+export const causalBlockLength = (block: Atom[]): number => {
   if (block.length === 0) return 0;
   const [head, ...tail] = block;
   const endIndex = tail.findIndex((atom) => atom.cause.timestamp < head.id.timestamp);
@@ -11,7 +11,7 @@ export const causalBlockLenght = (block: Atom[]): number => {
 };
 
 export const walkCausalBlock = (block: Atom[], callback: (atom: Atom) => boolean): number => {
-  const endIndex = causalBlockLenght(block);
+  const endIndex = causalBlockLength(block);
   const causalBlock = block.slice(0, endIndex);
   return causalBlock.findIndex((atom) => !callback(atom));
 };
