@@ -31,6 +31,6 @@ export default class Atom {
   }
 
   toString(): string {
-    return `Atom(${this.id.toString()} ${this.cause.toString()} ${this.value.content})`;
+    return `Atom(${this.id.toString()} ${this.cause.toString()} ${this.value.toString()})`;
   }
 }

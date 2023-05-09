@@ -26,7 +26,7 @@ export default (
       || getAtomId(cause.site, cause.index, cause.timestamp)
     : getAtomId();
   const atomValue = value
-    ? getAtomValue(value.content, value.priority, value.validateChild)
+    ? getAtomValue(value.content, value.priority, value.toString, value.validateChild)
     : getAtomValue();
   return new Atom(
     atomId,

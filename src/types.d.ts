@@ -1,5 +1,6 @@
 export interface AtomValue {
-  content: string;
+  content: any;
   priority: number;
+  toString(): string;
   validateChild(child: AtomValue): void;
 }
