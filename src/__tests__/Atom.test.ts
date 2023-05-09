@@ -1,13 +1,22 @@
 import Atom from '../Atom';
 import IndexMap from '../IndexMap';
 import getAtom from '../utils/factories/Atom';
+import getAtomId from '../utils/factories/AtomId';
+import getAtomValue from '../utils/factories/AtomValue';
 
 describe('Atom', () => {
   describe('toString', () => {
     it('should print according to defined format', () => {
-      const atom = getAtom();
+      const site1 = 5;
+      const timestamp1 = 178;
+      const site2 = 6;
+      const timestamp2 = 179;
+      const id1 = getAtomId(site1, undefined, timestamp1);
+      const id2 = getAtomId(site2, undefined, timestamp2);
+      const value = getAtomValue(true);
+      const atom = getAtom(id2, id1, value);
       expect(atom.toString()).toEqual(
-        `Atom(S${atom.id.site}@T${atom.id.timestamp} S${atom.cause.site}@T${atom.cause.timestamp} ${atom.value.content})`,
+        'Atom(S6@T179 S5@T178 true)',
       );
     });
   });
