@@ -4,7 +4,7 @@
   "description": "Typescript implementation of causal tree (CRDT)",
   "main": "index.js",
   "scripts": {
-    "build": "npx tsc -p tsconfig.json",
+    "build": "npx tsc -p tsconfig.build.json",
     "start": "node -r dotenv/config dist/app.js",
     "dev": "npx nodemon --watch src/ --exec npx ts-node -r dotenv/config src/app.ts -e ts",
     "test": "npx jest --watch",
@@ -27,8 +27,10 @@
   },
   "homepage": "https://github.com/crdteam/causal-tree-ts#readme",
   "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
     "@types/jest": "^29.4.0",
     "@types/node": "^18.13.0",
+    "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.51.0",
     "@typescript-eslint/parser": "^5.51.0",
     "eslint": "^8.33.0",
@@ -44,6 +46,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "uuid": "^9.0.0"
   }
 }

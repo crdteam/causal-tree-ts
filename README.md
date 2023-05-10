@@ -14,7 +14,7 @@ If you don't have any Node version installed, we recommend following [this tutor
 To install any needed dependencies, simply run
 
 ```bash
-npm install
+yarn
 ```
 
 ## Usage
@@ -22,7 +22,7 @@ npm install
 While in development, you can run the application in live mode using the following command:
 
 ```bash
-npm run dev
+yarn dev
 ```
 
 In this way, it will recompile as you change source files.
@@ -30,23 +30,23 @@ In this way, it will recompile as you change source files.
 To run the application as in production, you need first to compile source files to Javascript using:
 
 ```bash
-npm run buid
+yarn build
 ```
 
 This will create the `build` directory at root (if it doesn't exist). Then, you can run:
 
 ```bash
-npm run start
+yarn start
 ```
 
 We provided some test files that can be executed with:
 
 ```bash
-npm run test
+yarn test
 ```
 
 Or, to generate a coverage report:
 
 ```bash
-npm run test:coverage
+yarn test:coverage
 ```
