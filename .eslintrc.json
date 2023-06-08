@@ -43,6 +43,7 @@
             }
         ],
         "@typescript-eslint/return-await": "off",
+        "@typescript-eslint/no-shadow": "error",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-unused-vars": "warn",
         "@typescript-eslint/restrict-template-expressions": [
@@ -54,6 +55,15 @@
         ],
         "@typescript-eslint/member-ordering": "error",
         "@typescript-eslint/consistent-type-definitions": "error",
+        "@typescript-eslint/ban-types": [
+            "error",
+            {
+                "types": {
+                    "String": false
+                },
+                "extendDefaults": true
+            }
+        ],
         "no-console": "warn",
         "no-self-compare": "error",
         "no-template-curly-in-string": "error",
@@ -67,7 +77,7 @@
                 "allowElseIf": false
             }
         ],
-        "no-shadow": "error",
+        "no-shadow": "off",
         "no-useless-return": "error",
         "strict": "error",
         "yoda": "error",
