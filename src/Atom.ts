@@ -1,6 +1,8 @@
 import AtomId from './AtomId';
+import { AtomTag } from './constants';
 import IndexMap from './IndexMap';
-import type { AtomValue } from './types';
+import type { Value } from './interfaces/Value';
+import { priority } from './utils/functions';
 
 /**
  * Atom represents an atomic operation within a replicated tree.
@@ -13,12 +15,15 @@ export default class Atom {
 
   cause: AtomId;
 
-  value: AtomValue;
+  value: Value;
 
-  constructor(id: AtomId, cause: AtomId, value: AtomValue) {
+  tag: AtomTag;
+
+  constructor(id: AtomId, cause: AtomId, value: Value, tag: AtomTag = AtomTag.element) {
     this.id = id;
     this.cause = cause;
     this.value = value;
+    this.tag = tag;
   }
 
   /**
@@ -28,8 +33,8 @@ export default class Atom {
    * @returns {number} The relative order between atoms.
    */
   static compare(a: Atom, b: Atom): number {
-    const aPriority = a.value.priority;
-    const bPriority = b.value.priority;
+    const aPriority = priority(a.tag);
+    const bPriority = priority(b.tag);
     if (aPriority === bPriority) return AtomId.compare(a.id, b.id);
     return aPriority - bPriority;
   }
@@ -39,6 +44,7 @@ export default class Atom {
       this.id.remapSite(map),
       this.cause.remapSite(map),
       this.value,
+      this.tag,
     );
   }
 

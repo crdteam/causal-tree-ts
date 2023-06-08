@@ -1,8 +1,9 @@
-import type { AtomValue } from '../../types';
+import type { Value } from '../../interfaces/Value';
 import AtomId from '../../AtomId';
 import Atom from '../../Atom';
 import getAtomId from './AtomId';
 import getAtomValue from './AtomValue';
+import { AtomTag } from '../../constants';
 
 type AtomIdInput = AtomId | {
   site?: number,
@@ -10,12 +11,13 @@ type AtomIdInput = AtomId | {
   timestamp?: number,
 };
 
-type AtomValueInput = Partial<AtomValue>;
+type AtomValueInput = Partial<Value>;
 
 export default (
   id?: AtomIdInput,
   cause?: AtomIdInput,
   value?: AtomValueInput,
+  tag?: AtomTag,
 ): Atom => {
   const atomId = id
     ? (id instanceof AtomId && id)
@@ -26,11 +28,12 @@ export default (
       || getAtomId(cause.site, cause.index, cause.timestamp)
     : getAtomId();
   const atomValue = value
-    ? getAtomValue(value.content, value.priority, value.toString, value.validateChild)
+    ? getAtomValue(value.content, value.toString)
     : getAtomValue();
   return new Atom(
     atomId,
     atomCause,
     atomValue,
+    tag,
   );
 };

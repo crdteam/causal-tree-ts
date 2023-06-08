@@ -1,23 +1,13 @@
 import { faker } from '@faker-js/faker';
-import { AtomValue } from '../../types';
-
-const MAX_PRIORITY = -1;
-const MIN_PRIORITY = 100;
+import { Value } from '../../interfaces/Value';
 
 export default (
   content?: any,
-  priority?: number,
   toString?: () => string,
-  validateChild?: (child: AtomValue) => void,
-): AtomValue => {
+): Value => {
   const finalContent = content ?? faker.lorem.word();
   return {
     content: finalContent,
-    priority: priority ?? faker.datatype.number({
-      min: MAX_PRIORITY,
-      max: MIN_PRIORITY,
-    }),
     toString: toString ?? (() => JSON.stringify(finalContent)),
-    validateChild: validateChild ?? (() => true),
   };
 };

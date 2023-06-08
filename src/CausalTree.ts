@@ -55,5 +55,4 @@ export class CausalTree {
   insertAtom(atom: Atom, index: number): void {
     this.weave.splice(index, 0, atom);
   }
-
 }
