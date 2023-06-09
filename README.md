@@ -163,13 +163,12 @@ classDiagram
 
 ```mermaid
 classDiagram
-    CausalTree *-- Atom
     Atom *-- AtomId
-    TreePosition --> CausalTree
+    CausalTree *-- Atom
+    CausalTree <-- TreePosition
     TreePosition --> AtomId
-    IndexMap .. AtomId
     IndexMap .. Atom
-
+    IndexMap .. AtomId
 
     class CausalTree {
       int siteIdx
@@ -213,6 +212,4 @@ classDiagram
       get(int index): int
       set(int index, int value)
     }
-
 ```
-
