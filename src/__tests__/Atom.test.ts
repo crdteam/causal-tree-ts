@@ -35,8 +35,8 @@ describe('Atom', () => {
         { site: 0, timestamp: 2 },
       );
       expect(Atom.compare(atom1, atom1)).toEqual(0);
-      expect(Atom.compare(atom1, atom2)).toBeLessThan(0);
-      expect(Atom.compare(atom2, atom1)).toBeGreaterThan(0);
+      expect(Atom.compare(atom1, atom2)).toBeGreaterThan(0);
+      expect(Atom.compare(atom2, atom1)).toBeLessThan(0);
       expect(Atom.compare(atom1, atom3)).toBeLessThan(0);
     });
   });
