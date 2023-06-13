@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import AtomId from '../../AtomId';
+import AtomId from '../../core/AtomId';
 
 const MAX_SITE = 1000;
 

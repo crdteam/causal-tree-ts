@@ -1,7 +1,7 @@
 import Atom from './Atom';
 import AtomId from './AtomId';
 import IndexMap from './IndexMap';
-import { getNewUuid } from './utils/functions';
+import { getNewUuid } from '../utils/functions';
 
 /**
  * Returns the index where a site is (or should be) in the sitemap.

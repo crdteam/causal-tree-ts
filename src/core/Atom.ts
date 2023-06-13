@@ -1,8 +1,8 @@
 import AtomId from './AtomId';
-import { AtomTag } from './constants';
+import { AtomTag } from '../constants';
 import IndexMap from './IndexMap';
-import type { Value } from './interfaces/Value';
-import { priority } from './utils/functions';
+import type { Value } from '../ui/Value';
+import { priority } from '../utils/functions';
 
 /**
  * Atom represents an atomic operation within a replicated tree.

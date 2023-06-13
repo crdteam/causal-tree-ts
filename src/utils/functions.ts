@@ -1,5 +1,5 @@
 import { v1 as uuidv1 } from 'uuid';
-import type Atom from '../Atom';
+import type Atom from '../core/Atom';
 import { AtomTag } from '../constants';
 
 export const priority = (tag: AtomTag) => {

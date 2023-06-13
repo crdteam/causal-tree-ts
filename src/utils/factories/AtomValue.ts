@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Value } from '../../interfaces/Value';
+import { Value } from '../../ui/Value';
 
 export default (
   content?: any,

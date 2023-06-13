@@ -1,4 +1,4 @@
-import IndexMap from '../IndexMap';
+import IndexMap from '../core/IndexMap';
 
 describe('IndexMap', () => {
   describe('get', () => {

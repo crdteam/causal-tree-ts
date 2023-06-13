@@ -1,6 +1,6 @@
-import type { Value } from '../../interfaces/Value';
-import AtomId from '../../AtomId';
-import Atom from '../../Atom';
+import type { Value } from '../../ui/Value';
+import AtomId from '../../core/AtomId';
+import Atom from '../../core/Atom';
 import getAtomId from './AtomId';
 import getAtomValue from './AtomValue';
 import { AtomTag } from '../../constants';

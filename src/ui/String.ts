@@ -1,4 +1,4 @@
-import { Value } from '../interfaces/Value';
+import { Value } from './Value';
 
 export class String implements Value {
   content: string;
