@@ -8,7 +8,7 @@
     "start": "node -r dotenv/config dist/app.js",
     "dev": "npx nodemon --watch src/ --exec npx ts-node -r dotenv/config src/app.ts -e ts",
     "test": "npx jest --watch",
-    "test:cov": "npx jest --coverage"
+    "test:cov": "npx jest --coverage --collectCoverageFrom='src/**/*.ts'"
   },
   "repository": {
     "type": "git",
