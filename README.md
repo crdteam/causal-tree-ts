@@ -14,7 +14,7 @@ If you don't have any Node version installed, we recommend following [this tutor
 To install any needed dependencies, simply run
 
 ```bash
-yarn
+yarn install --frozen-lockfile
 ```
 
 ## Usage
