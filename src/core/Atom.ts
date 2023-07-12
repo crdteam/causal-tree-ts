@@ -42,6 +42,11 @@ export default class Atom {
     );
   }
 
+  remapSiteInplace(map: IndexMap): void {
+    this.id.remapSiteInplace(map);
+    this.cause.remapSiteInplace(map);
+  }
+
   toString(): string {
     return `Atom(${this.id.toString()} ${this.cause.toString()} ${this.value.toString()})`;
   }
