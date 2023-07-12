@@ -1,10 +1,14 @@
+import TreePosition from '../core/TreePosition';
+
 /**
- * Value is a tree operation.
- * @property content - The content itself of the operation.
- * @property toString - A function that returns a string representation of the
+ * Value represents a structure that may be converted to concrete data.
+ * @property treePosition - The position of the value in the tree.
+ * @property snapshot - A function that returns a string representation of the
  * operation.
+ * @property isValue - A function that checks whether the given value is a value.
  */
 export interface Value {
-  content: any;
-  toString(): string;
+  treePosition: TreePosition;
+  isValue(): boolean;
+  snapshot(): string;
 }

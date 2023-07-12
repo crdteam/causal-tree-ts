@@ -1,13 +1,19 @@
+import TreePosition from '../core/TreePosition';
 import { Value } from './Value';
 
 export class String implements Value {
-  content: string;
+  treePosition: TreePosition;
 
-  constructor(content: string) {
-    this.content = content;
+  constructor(treePosition: TreePosition) {
+    this.treePosition = treePosition;
   }
 
-  toString(): string {
-    return this.content;
+  isValue(): boolean {
+    return false;
+  }
+
+  snapshot(): string {
+    const idx = this.treePosition.getIndex();
+    return `String(${idx})`;
   }
 }

@@ -1,6 +1,6 @@
-import { String } from '../components/String';
-import { Counter } from '../components/Counter';
-import { List } from '../components/List';
+import { String } from './String';
+import { Counter } from './Counter';
+import { List } from './List';
 
 /**
  * Register contains a single value or none at all.

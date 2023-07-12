@@ -68,7 +68,7 @@
         "no-self-compare": "error",
         "no-template-curly-in-string": "error",
         "require-atomic-updates": "error",
-        "class-methods-use-this": "error",
+        "class-methods-use-this": "off",
         "default-case-last": "error",
         "no-alert": "error",
         "no-else-return": [
