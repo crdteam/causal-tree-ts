@@ -25,18 +25,21 @@ describe('Atom', () => {
       const atom1 = getAtom(
         { site: 0, timestamp: 2 },
         { site: 0, timestamp: 1 },
+        { priority: 10 },
       );
       const atom2 = getAtom(
         { site: 1, timestamp: 2 },
         { site: 1, timestamp: 1 },
+        { priority: 100 },
       );
       const atom3 = getAtom(
         { site: 0, timestamp: 3 },
         { site: 0, timestamp: 2 },
+        { priority: 10 },
       );
       expect(Atom.compare(atom1, atom1)).toEqual(0);
-      expect(Atom.compare(atom1, atom2)).toBeGreaterThan(0);
-      expect(Atom.compare(atom2, atom1)).toBeLessThan(0);
+      expect(Atom.compare(atom1, atom2)).toBeLessThan(0);
+      expect(Atom.compare(atom2, atom1)).toBeGreaterThan(0);
       expect(Atom.compare(atom1, atom3)).toBeLessThan(0);
     });
   });

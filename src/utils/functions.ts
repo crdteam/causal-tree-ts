@@ -1,17 +1,5 @@
 import { v1 as uuidv1 } from 'uuid';
 import type Atom from '../core/Atom';
-import { AtomTag } from '../constants';
-
-export const priority = (tag: AtomTag) => {
-  switch (tag) {
-    case AtomTag.delete:
-      return -1;
-    case AtomTag.element:
-      return 1;
-    default:
-      return 0;
-  }
-};
 
 /**
  * @returns A new unique identifier (uuid v1).
