@@ -39,6 +39,18 @@ This will create the `build` directory at root (if it doesn't exist). Then, you 
 yarn start
 ```
 
+To check the code for any style issue or bad practice, you can run:
+
+```bash
+yarn lint
+```
+
+Which runs ESLint linter with the provided rules. To fix any auto-fixable issue, you can run:
+
+```bash
+yarn lint:fix
+```
+
 We provided some test files that can be executed with:
 
 ```bash
