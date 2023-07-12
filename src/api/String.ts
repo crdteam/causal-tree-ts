@@ -8,10 +8,6 @@ export class String implements Value {
     this.treePosition = treePosition;
   }
 
-  isValue(): boolean {
-    return false;
-  }
-
   snapshot(): string {
     const idx = this.treePosition.getIndex();
     return `String(${idx})`;
