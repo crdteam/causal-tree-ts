@@ -42,6 +42,7 @@ export default class Atom {
     );
   }
 
+  // TODO: unused
   remapSiteInplace(map: IndexMap): void {
     this.id.remapSiteInplace(map);
     this.cause.remapSiteInplace(map);
