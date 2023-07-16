@@ -1,6 +1,6 @@
 import AtomId from '../AtomId';
 import IndexMap from '../IndexMap';
-import getAtomId from '../utils/factories/AtomId';
+import getAtomId from '../../utils/factories/AtomId';
 
 describe('Atom', () => {
   describe('toString', () => {

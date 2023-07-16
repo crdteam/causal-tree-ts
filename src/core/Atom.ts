@@ -1,6 +1,6 @@
 import AtomId from './AtomId';
 import IndexMap from './IndexMap';
-import type { AtomValue } from './types';
+import { AtomValue } from './AtomValue';
 
 /**
  * Atom represents an atomic operation within a replicated tree.
@@ -40,6 +40,12 @@ export default class Atom {
       this.cause.remapSite(map),
       this.value,
     );
+  }
+
+  // TODO: unused
+  remapSiteInplace(map: IndexMap): void {
+    this.id.remapSiteInplace(map);
+    this.cause.remapSiteInplace(map);
   }
 
   toString(): string {

@@ -1,8 +1,8 @@
 import Atom from '../Atom';
 import IndexMap from '../IndexMap';
-import getAtom from '../utils/factories/Atom';
-import getAtomId from '../utils/factories/AtomId';
-import getAtomValue from '../utils/factories/AtomValue';
+import getAtom from '../../utils/factories/Atom';
+import getAtomId from '../../utils/factories/AtomId';
+import getAtomValue from '../../utils/factories/AtomValue';
 
 describe('Atom', () => {
   describe('toString', () => {

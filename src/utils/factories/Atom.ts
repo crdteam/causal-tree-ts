@@ -1,8 +1,8 @@
-import type { AtomValue } from '../../types';
-import AtomId from '../../AtomId';
-import Atom from '../../Atom';
+import AtomId from '../../core/AtomId';
+import Atom from '../../core/Atom';
 import getAtomId from './AtomId';
 import getAtomValue from './AtomValue';
+import { AtomValue } from '../../core/AtomValue';
 
 type AtomIdInput = AtomId | {
   site?: number,

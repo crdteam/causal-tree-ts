@@ -35,6 +35,11 @@ export default class AtomId {
     return new AtomId(map.get(this.site), this.index, this.timestamp);
   }
 
+  // TODO: unused
+  remapSiteInplace(map: IndexMap): void {
+    this.site = map.get(this.site);
+  }
+
   toString(): string {
     return `S${this.site}@T${this.timestamp}`;
   }

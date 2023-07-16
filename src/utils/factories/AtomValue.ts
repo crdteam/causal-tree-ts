@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { AtomValue } from '../../types';
+import { AtomValue } from '../../core/AtomValue';
 
 const MAX_PRIORITY = -1;
 const MIN_PRIORITY = 100;
