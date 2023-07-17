@@ -27,9 +27,15 @@ export default class TreePosition {
    * Returns the atom's position in the weave.
    */
   getIndex(): number {
-    // TODO: check if Array.slice(lastKnownPos) is faster
-    return this.tree.weave.findIndex(
-      (atom, index) => index > this.lastKnownPos && atom.id === this.id,
+    for (let i = this.lastKnownPos; i < this.tree.weave.length; i += 1) {
+      if (this.tree.weave[i].id === this.id) {
+        this.lastKnownPos = i;
+        return i;
+      }
+    }
+
+    throw new Error(
+      `Atom ${this.id.toString()} not found in weave after last known position ${this.lastKnownPos}. Weave size: ${this.tree.weave.length}`,
     );
   }
 }
