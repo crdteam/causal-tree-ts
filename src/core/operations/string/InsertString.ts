@@ -1,5 +1,7 @@
 import { OPERATION_PRIORITY_MAP } from '../../../utils/constants';
 import { AtomValue } from '../../AtomValue';
+import Delete from '../Delete';
+import InsertChar from './InsertChar';
 
 export default class InsertString implements AtomValue {
   content: null;
@@ -15,7 +17,11 @@ export default class InsertString implements AtomValue {
     return 'InsertString';
   }
 
-  validateChild(): void {
-    throw new Error('InsertString cannot have children.');
+  validateChild(child: AtomValue): void {
+    if (child instanceof InsertChar || child instanceof Delete) {
+      return;
+    }
+
+    throw new Error(`Invalid child type for InsertString operation: ${child.constructor.name}`);
   }
 }
