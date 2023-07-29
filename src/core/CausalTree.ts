@@ -3,6 +3,9 @@ import AtomId from './AtomId';
 import IndexMap from './IndexMap';
 import { getNewUuid, walkCausalBlock } from '../utils/functions';
 import { AtomValue } from './AtomValue';
+import InsertString from './operations/string/InsertString';
+import Delete from './operations/Delete';
+import InsertCounter from './operations/counter/InsertCounter';
 
 /**
  * Returns the index where a site is (or should be) in the sitemap.
@@ -54,7 +57,7 @@ export class CausalTree {
   }
 
   /**
-   * Inserts an atom in the given index of the weave (formerly insertAtom).
+   * Inserts an atom in the given index of the weave (former insertAtom).
    *
    * Time complexity of O(weave.length).
    * @param index - position at the weave
@@ -73,6 +76,11 @@ export class CausalTree {
     this.yarns[site].push(atom);
   }
 
+  /**
+   * Inserts an atom in the weave given its cause atom id (former insertAtomAtCursor).
+   *
+   * Time complexity of O(weave.length + (avg. block size)).
+   */
   insertChildAtom(atom: Atom, cause: AtomId): void {
     const causeIdx = this.getAtomIndexAtWeave(cause);
     if (causeIdx === -1) {
@@ -111,7 +119,7 @@ export class CausalTree {
   }
 
   /**
-   * Creates and inserts a new atom in the weave (formerly addAtom).
+   * Creates and inserts a new atom in the weave (former addAtom).
    *
    * Time complexity of O(weave.length + log(sitemap.length)).
    */
@@ -130,5 +138,37 @@ export class CausalTree {
     this.insertChildAtom(atom, cause);
     this.insertAtomAtYarn(atom, this.siteIdx);
     return atomId;
+  }
+
+  /**
+   * Inserts a new string container atom at the root of the weave.
+   * @returns id of the inserted atom
+   */
+  insertString(): AtomId {
+    const root = new AtomId(0, 0, 0);
+    const insertStr = new InsertString();
+    const id = this.insertAtomFromValue(insertStr, root);
+    return id;
+  }
+
+  /**
+   * Inserts a new counter container atom at the root of the weave.
+   * @returns id of the inserted atom
+   */
+  insertCounter(): AtomId {
+    const root = new AtomId(0, 0, 0);
+    const insertCtr = new InsertCounter();
+    const id = this.insertAtomFromValue(insertCtr, root);
+    return id;
+  }
+
+  /**
+   * Deletes an atom from the weave.
+   * @param atomID - id of the atom to be deleted
+   */
+  deleteAtom(atomID: AtomId): void {
+    if (atomID.timestamp === 0) return;
+    const deleteAtom = new Delete();
+    this.insertAtomFromValue(deleteAtom, atomID);
   }
 }
