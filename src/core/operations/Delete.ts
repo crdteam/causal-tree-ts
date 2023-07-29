@@ -15,6 +15,10 @@ export default class Delete implements AtomValue {
     return 'Delete';
   }
 
+  contentToString(): string {
+    return '⌫';
+  }
+
   validateChild(child: AtomValue): void {
     throw new Error(`Invalid child type for Delete operation: ${child.constructor.name}`);
   }

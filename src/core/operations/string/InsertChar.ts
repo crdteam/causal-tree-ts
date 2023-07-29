@@ -3,17 +3,22 @@ import { AtomValue } from '../../AtomValue';
 import Delete from '../Delete';
 
 export default class InsertChar implements AtomValue {
-  content: null;
+  content: string;
 
   priority: number;
 
-  constructor() {
-    this.content = null;
+  constructor(char: string) {
+    if (char.length !== 1) throw new Error('InsertChar content must be a single character');
+    this.content = char;
     this.priority = OPERATION_PRIORITY_MAP.InsertChar;
   }
 
   toString(): string {
-    return 'InsertChar';
+    return `InsertChar(${this.content})`;
+  }
+
+  contentToString(): string {
+    return this.content;
   }
 
   validateChild(child: AtomValue): void {

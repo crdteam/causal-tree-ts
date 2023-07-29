@@ -17,6 +17,10 @@ export default class InsertString implements AtomValue {
     return 'InsertString';
   }
 
+  contentToString(): string {
+    return 'STR: ';
+  }
+
   validateChild(child: AtomValue): void {
     if (child instanceof InsertChar || child instanceof Delete) {
       return;
