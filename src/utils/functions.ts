@@ -1,5 +1,7 @@
 import { v1 as uuidv1 } from 'uuid';
 import type Atom from '../core/Atom';
+import InsertString from '../core/operations/string/InsertString';
+import InsertCounter from '../core/operations/counter/InsertCounter';
 
 /**
  * @returns A new unique identifier (uuid v1).
@@ -42,3 +44,10 @@ export const walkChildren = (block: Atom[], callback: (atom: Atom) => boolean): 
     return true;
   });
 };
+
+/**
+ * Checks if a given atom is a container.
+ */
+export const isContainer = (atom: Atom): boolean => (
+  atom.value instanceof InsertString || atom.value instanceof InsertCounter
+);
