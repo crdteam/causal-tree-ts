@@ -15,12 +15,9 @@ export default class InsertAdd implements AtomValue {
     this.priority = OPERATION_PRIORITY_MAP.InsertAdd;
   }
 
-  toString(): string {
-    return `InsertAdd(${this.content})`;
-  }
-
-  contentToString(): string {
-    return this.content.toString();
+  toString(verbose = false): string {
+    if (verbose) return `InsertAdd(${this.content})`;
+    return `${this.content > 0 ? '+' : ''}${this.content}`;
   }
 
   validateChild(child: AtomValue): void {

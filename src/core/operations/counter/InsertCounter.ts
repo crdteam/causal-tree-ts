@@ -12,12 +12,9 @@ export default class InsertCounter implements AtomValue {
     this.priority = OPERATION_PRIORITY_MAP.InsertCounter;
   }
 
-  toString(): string {
-    return 'InsertCounter';
-  }
-
-  contentToString(): string {
-    return 'CTR: ';
+  toString(verbose = false): string {
+    if (verbose) return 'InsertCounter';
+    return 'CTR:';
   }
 
   validateChild(child: AtomValue): void {

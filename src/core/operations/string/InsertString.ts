@@ -13,12 +13,9 @@ export default class InsertString implements AtomValue {
     this.priority = OPERATION_PRIORITY_MAP.InsertString;
   }
 
-  toString(): string {
-    return 'InsertString';
-  }
-
-  contentToString(): string {
-    return 'STR: ';
+  toString(verbose = false): string {
+    if (verbose) return 'InsertString';
+    return 'STR:';
   }
 
   validateChild(child: AtomValue): void {

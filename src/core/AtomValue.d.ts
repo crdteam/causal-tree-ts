@@ -12,6 +12,6 @@
 export interface AtomValue {
   content: any;
   priority: number;
-  toString(): string;
+  toString(verbose?: boolean): string;
   validateChild(child: AtomValue): void;
 }

@@ -11,11 +11,8 @@ export default class Delete implements AtomValue {
     this.priority = OPERATION_PRIORITY_MAP.Delete;
   }
 
-  toString(): string {
-    return 'Delete';
-  }
-
-  contentToString(): string {
+  toString(verbose = false): string {
+    if (verbose) return 'Delete';
     return '⌫';
   }
 

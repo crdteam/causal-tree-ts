@@ -13,11 +13,8 @@ export default class InsertChar implements AtomValue {
     this.priority = OPERATION_PRIORITY_MAP.InsertChar;
   }
 
-  toString(): string {
-    return `InsertChar(${this.content})`;
-  }
-
-  contentToString(): string {
+  toString(verbose = false): string {
+    if (verbose) return `InsertChar(${this.content})`;
     return this.content;
   }
 
