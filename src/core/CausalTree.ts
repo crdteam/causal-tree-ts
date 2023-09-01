@@ -1,7 +1,11 @@
 import Atom from './Atom';
 import AtomId from './AtomId';
 import IndexMap from './IndexMap';
-import { getNewUuid } from '../utils/functions';
+import { causalBlockLength, getNewUuid, isContainer, walkCausalBlock } from '../utils/functions';
+import { AtomValue } from './AtomValue';
+import InsertString from './operations/string/InsertString';
+import Delete from './operations/Delete';
+import InsertCounter from './operations/counter/InsertCounter';
 
 /**
  * Returns the index where a site is (or should be) in the sitemap.
@@ -22,7 +26,7 @@ const findSiteIndex = (sitemap: string[], siteUuid: string): number => {
   return left;
 };
 
-export class CausalTree {
+export default class CausalTree {
   siteIdx: number;
 
   sitemap: string[];
@@ -52,7 +56,182 @@ export class CausalTree {
     return this.yarns[atomID.site][atomID.index];
   }
 
-  insertAtom(atom: Atom, index: number): void {
+  /**
+   * Inserts an atom in the given index of the weave (former insertAtom).
+   *
+   * Time complexity of O(weave.length).
+   * @param index - position at the weave
+   */
+  insertAtomAtWeave(atom: Atom, index: number): void {
     this.weave.splice(index, 0, atom);
+  }
+
+  /**
+   * Inserts an atom at the end of given site's yarn.
+   *
+   * Time complexity of O(yarn.length).
+   * @param site - index of the site in the sitemap
+   */
+  insertAtomAtYarn(atom: Atom, site: number): void {
+    this.yarns[site].push(atom);
+  }
+
+  /**
+   * Inserts an atom in the weave given its cause atom id (former insertAtomAtCursor).
+   *
+   * Time complexity of O(weave.length + (avg. block size)).
+   */
+  insertChildAtom(atom: Atom, cause: AtomId): void {
+    const causeIdx = this.getAtomIndexAtWeave(cause);
+    if (causeIdx === -1) {
+      this.insertAtomAtWeave(atom, 0);
+      return;
+    }
+
+    if (causeIdx === this.weave.length) {
+      throw new Error('Invalid cause atom');
+    }
+
+    /** Search for position in weave that atom should be inserted, in a way that
+    * it's sorted relative to other children in descending order.
+    *
+    *                                   causal block of cursor
+    *                       ------------------------------------------------
+    *  Weave:           ... [cursor] [child1] ... [child2] ... [child3] ... [not child]
+    *  Block indices:           0         1          c2'          c3'           end'
+    *  Weave indices:          c0        c1          c2           c3            end
+    */
+    let pos = 0;
+    let len = 0;
+    walkCausalBlock(this.weave.slice(causeIdx), (a: Atom) => {
+      len += 1;
+      if (a.cause === cause && Atom.compare(a, atom) < 0 && pos === 0) {
+        pos = len;
+      }
+
+      return true;
+    });
+
+    const index = pos > 0
+      ? causeIdx + pos
+      : causeIdx + len + 1;
+    this.insertAtomAtWeave(atom, index);
+  }
+
+  /**
+   * Creates and inserts a new atom in the weave (former addAtom).
+   *
+   * Time complexity of O(weave.length + log(sitemap.length)).
+   */
+  insertAtomFromValue(value: AtomValue, cause: AtomId): AtomId {
+    this.timestamp += 1;
+    if (this.timestamp === 0) throw new Error('Timestamp overflow');
+
+    if (cause.timestamp > 0) {
+      const causeAtom = this.getAtom(cause);
+      if (!causeAtom) throw new Error('Invalid cause atom');
+      causeAtom.value.validateChild(value);
+    }
+
+    const atomId = new AtomId(this.siteIdx, this.yarns[this.siteIdx].length, this.timestamp);
+    const atom = new Atom(atomId, cause, value);
+    this.insertChildAtom(atom, cause);
+    this.insertAtomAtYarn(atom, this.siteIdx);
+    return atomId;
+  }
+
+  /**
+   * Inserts a new string container atom at the root of the weave.
+   * @returns id of the inserted atom
+   */
+  insertString(): AtomId {
+    const root = new AtomId(0, 0, 0);
+    const insertStr = new InsertString();
+    const id = this.insertAtomFromValue(insertStr, root);
+    return id;
+  }
+
+  /**
+   * Inserts a new counter container atom at the root of the weave.
+   * @returns id of the inserted atom
+   */
+  insertCounter(): AtomId {
+    const root = new AtomId(0, 0, 0);
+    const insertCtr = new InsertCounter();
+    const id = this.insertAtomFromValue(insertCtr, root);
+    return id;
+  }
+
+  /**
+   * Deletes an atom from the weave.
+   * @param atomID - id of the atom to be deleted
+   */
+  deleteAtom(atomID: AtomId): void {
+    if (atomID.timestamp === 0) return;
+    const deleteAtom = new Delete();
+    this.insertAtomFromValue(deleteAtom, atomID);
+  }
+
+  /**
+   * Ignores deleted atoms in the weave
+   * @returns an array of atoms
+   *
+   * Time complexity of O(weave.length)
+   */
+  filterDeletedAtoms(): Atom[] {
+    const atoms: Atom[] = [];
+    for (let i = 0; i < this.weave.length;) {
+      const element = this.weave[i];
+      const next = i === this.weave.length - 1 ? null : this.weave[i + 1];
+      if (!next) {
+        atoms.push(element);
+        break;
+      }
+
+      if (next.value instanceof Delete) {
+        if (isContainer(element)) i += causalBlockLength(this.weave.slice(i));
+        else i += 2;
+      } else {
+        atoms.push(element);
+        i += 1;
+      }
+    }
+
+    return atoms;
+  }
+
+  /**
+   * Returns the tree weave as a readable array string (result).
+   */
+  toString(): any[] {
+    const atoms = this.filterDeletedAtoms();
+    const elements: any[] = [];
+
+    for (let i = 0; i < atoms.length;) {
+      const curr = atoms[i];
+
+      if (isContainer(curr)) {
+        const len = causalBlockLength(atoms.slice(i));
+        const causalBlock = atoms.slice(i + 1, i + len + 1);
+
+        if (curr.value instanceof InsertString) {
+          const str = causalBlock
+            .map((a) => a.value.toString())
+            .join('');
+          elements.push(str);
+        } else if (curr.value instanceof InsertCounter) {
+          const sum = causalBlock
+            .map((a) => a.value.content)
+            .reduce((a, b) => a + b, 0);
+          elements.push(sum);
+        }
+
+        i += len;
+      } else {
+        throw new Error(`Atom without a container: ${curr.value.toString(true)}. AtomId: ${curr.id.toString()}`);
+      }
+    }
+
+    return elements;
   }
 }
