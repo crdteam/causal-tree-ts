@@ -1,6 +1,7 @@
 import { OPERATION_PRIORITY_MAP } from '../../../utils/constants';
 import { AtomValue } from '../../AtomValue';
 import Delete from '../Delete';
+import InsertAdd from './InsertAdd';
 
 export default class InsertCounter implements AtomValue {
   content: null;
@@ -18,7 +19,7 @@ export default class InsertCounter implements AtomValue {
   }
 
   validateChild(child: AtomValue): void {
-    if (child instanceof InsertCounter || child instanceof Delete) {
+    if (child instanceof InsertAdd || child instanceof Delete) {
       return;
     }
 
