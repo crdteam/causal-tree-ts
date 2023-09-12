@@ -27,7 +27,7 @@ export const causalBlockLength = (block: Atom[]): number => {
  */
 export const walkCausalBlock = (block: Atom[], callback: (atom: Atom) => boolean): number => {
   const endIndex = causalBlockLength(block);
-  const causalBlock = block.slice(0, endIndex);
+  const causalBlock = block.slice(1, endIndex);
   return causalBlock.findIndex((atom) => !callback(atom));
 };
 
