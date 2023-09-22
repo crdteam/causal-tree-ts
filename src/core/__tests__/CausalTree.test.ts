@@ -154,7 +154,11 @@ describe('CausalTree', () => {
       const id3 = tree.insertAtomFromValue(new InsertChar('r'), id2);
       const id4 = tree.insertAtomFromValue(new InsertChar('d'), id3);
       const id5 = tree.insertAtomFromValue(new InsertChar('t'), id4);
-
+// [str]:id1 -- o
+//   '- c:id2 -- [del]
+//      '- r:id3 -- m
+//         '- d:id4 -- [del]
+//            '- t:id5 -- [del]
       tree.deleteAtom(id2);
       tree.insertAtomFromValue(new InsertChar('o'), id1);
       tree.deleteAtom(id4);
