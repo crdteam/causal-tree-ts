@@ -38,7 +38,11 @@ describe('CausalTree', () => {
     it('should get the final value of a string weave', () => {
       const tree = new CausalTree();
       const id1 = tree.insertString();
-
+// [str]:id1 -- c:id6
+//   '- a:id2 -- r:id7 -- ' ':id9
+//      |        '- s:id8
+//      '- t:id3 -- o:id4 -- r:id10
+//                  '- m:id5
       const id2 = tree.insertAtomFromValue(new InsertChar('a'), id1);
       const id3 = tree.insertAtomFromValue(new InsertChar('t'), id2);
       const id4 = tree.insertAtomFromValue(new InsertChar('o'), id3);
