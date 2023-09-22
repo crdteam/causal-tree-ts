@@ -105,8 +105,10 @@ export default class CausalTree {
     let len = 0;
     walkCausalBlock(this.weave.slice(causeIdx), (a: Atom) => {
       len += 1;
-      if (a.cause === cause && Atom.compare(a, atom) < 0 && pos === 0) {
+      // TODO: if there are new operation priorities, this should be revisited
+      if (Atom.compare(a, atom) < 0) {
         pos = len;
+        return false;
       }
 
       return true;
