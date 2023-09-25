@@ -2,6 +2,7 @@ import { v1 as uuidv1 } from 'uuid';
 import type Atom from '../core/Atom';
 import InsertString from '../core/operations/string/InsertString';
 import InsertCounter from '../core/operations/counter/InsertCounter';
+import Delete from '../core/operations/Delete';
 
 /**
  * @returns A new unique identifier (uuid v1).
@@ -29,6 +30,40 @@ export const walkCausalBlock = (block: Atom[], callback: (atom: Atom) => boolean
   const endIndex = causalBlockLength(block);
   const causalBlock = block.slice(1, endIndex);
   return causalBlock.findIndex((atom) => !callback(atom));
+};
+
+/**
+ * Invokes the closure callback with each atom of the causal block, including
+ * the head, and excluding Delete atoms.
+ */
+export const walkCausalBlockNoDelete = (
+  block: Atom[],
+  headPos: number,
+  callback: (atom: Atom, pos: number, isDeleted: boolean) => boolean,
+): number => {
+  const endIndex = causalBlockLength(block);
+  const causalBlock = block.slice(0, endIndex);
+  let count = 1;
+  let pos = headPos;
+  let isDeleted = false;
+  for (let i = 0; i < causalBlock.length; pos = headPos + i, isDeleted = false) {
+    const atom = block[i];
+    // Check if atom is deleted (and walk through all Delete atoms)
+    let valueIsDelete = false;
+    do {
+      i += 1;
+      valueIsDelete = atom.value instanceof Delete;
+      if (valueIsDelete) isDeleted = true;
+    } while (valueIsDelete && i < causalBlock.length);
+
+    // Walks through causal block until the callback function returns false
+    if (!callback(atom, pos, isDeleted)) break;
+
+    // Counts only non-deleted atoms
+    count += 1;
+  }
+
+  return count;
 };
 
 /**
