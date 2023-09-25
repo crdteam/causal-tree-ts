@@ -172,7 +172,7 @@ export default class CausalTree {
    * Time complexity of O(weave.length).
    * @param index - position at the weave
    */
-  protected insertAtomAtWeave(atom: Atom, index: number): void {
+  insertAtomAtWeave(atom: Atom, index: number): void {
     this.weave.splice(index, 0, atom);
   }
 
@@ -182,7 +182,7 @@ export default class CausalTree {
      * Time complexity of O(yarn.length).
      * @param site - index of the site in the sitemap
      */
-  protected insertAtomAtYarn(atom: Atom, site: number): void {
+  insertAtomAtYarn(atom: Atom, site: number): void {
     this.yarns[site].push(atom);
   }
 
@@ -192,7 +192,7 @@ export default class CausalTree {
      * Time complexity of O(weave.length + (avg. block size)).
      * @returns index of the inserted atom in the weave.
      */
-  protected insertChildAtom(atom: Atom, cause: AtomId): number {
+  insertChildAtom(atom: Atom, cause: AtomId): number {
     const causeIdx = this.getAtomIndexAtWeave(cause);
     if (causeIdx === -1) {
       this.insertAtomAtWeave(atom, 0);
@@ -236,7 +236,7 @@ export default class CausalTree {
    * Deletes an atom from the weave.
    * @param atomID - id of the atom to be deleted
    */
-  protected deleteAtom(atomID: AtomId): void {
+  deleteAtom(atomID: AtomId): void {
     if (atomID.timestamp === 0) return;
     const deleteAtom = new Delete();
     this.insertAtomFromValue(deleteAtom, atomID);
@@ -245,7 +245,7 @@ export default class CausalTree {
   /**
    * Clears the tree weave and yarns.
    */
-  private clean(): void {
+  clean(): void {
     this.weave = [];
     this.yarns = [[]];
   }
