@@ -58,6 +58,12 @@
         ],
         "@typescript-eslint/member-ordering": "error",
         "@typescript-eslint/consistent-type-definitions": "error",
+        "@typescript-eslint/no-use-before-define": [
+            "error",
+            {
+                "classes": false
+            }
+        ],
         "@typescript-eslint/ban-types": [
             "error",
             {
@@ -71,6 +77,7 @@
         "no-self-compare": "error",
         "no-template-curly-in-string": "error",
         "require-atomic-updates": "error",
+        "max-classes-per-file": "off",
         "class-methods-use-this": "off",
         "default-case-last": "error",
         "no-alert": "error",
@@ -81,6 +88,7 @@
             }
         ],
         "no-shadow": "off",
+        "no-use-before-define": "off",
         "no-useless-return": "error",
         "strict": "error",
         "yoda": "error",
