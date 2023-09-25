@@ -12,6 +12,6 @@
 export interface Cursor {
   index(_: number): void;
   delete(): void;
-  insert();
+  insert(_: any): any;
   element();
 }
