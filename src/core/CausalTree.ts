@@ -27,15 +27,15 @@ const findSiteIndex = (sitemap: string[], siteUuid: string): number => {
 };
 
 export default class CausalTree {
-  siteIdx: number;
-
-  sitemap: string[];
-
-  timestamp: number;
-
   weave: Atom[];
 
-  yarns: Atom[][];
+  private sitemap: string[];
+
+  private timestamp: number;
+
+  private yarns: Atom[][];
+
+  private siteIdx: number;
 
   constructor() {
     const siteUuid = getNewUuid();
@@ -46,80 +46,8 @@ export default class CausalTree {
     this.yarns = [[]];
   }
 
-  getAtomIndexAtWeave(atomID: AtomId): number {
-    if (atomID.timestamp === 0) return -1;
-    const idx = this.weave.findIndex((atom) => atom.id === atomID);
-    return idx === -1 ? this.weave.length : idx;
-  }
-
   getAtom(atomID: AtomId): Atom {
     return this.yarns[atomID.site][atomID.index];
-  }
-
-  /**
-   * Inserts an atom in the given index of the weave (former insertAtom).
-   *
-   * Time complexity of O(weave.length).
-   * @param index - position at the weave
-   */
-  insertAtomAtWeave(atom: Atom, index: number): void {
-    this.weave.splice(index, 0, atom);
-  }
-
-  /**
-   * Inserts an atom at the end of given site's yarn.
-   *
-   * Time complexity of O(yarn.length).
-   * @param site - index of the site in the sitemap
-   */
-  insertAtomAtYarn(atom: Atom, site: number): void {
-    this.yarns[site].push(atom);
-  }
-
-  /**
-   * Inserts an atom in the weave given its cause atom id (former insertAtomAtCursor).
-   *
-   * Time complexity of O(weave.length + (avg. block size)).
-   * @returns index of the inserted atom in the weave.
-   */
-  insertChildAtom(atom: Atom, cause: AtomId): number {
-    const causeIdx = this.getAtomIndexAtWeave(cause);
-    if (causeIdx === -1) {
-      this.insertAtomAtWeave(atom, 0);
-      return -1;
-    }
-
-    if (causeIdx === this.weave.length) {
-      throw new Error('Invalid cause atom');
-    }
-
-    /** Search for position in weave that atom should be inserted, in a way that
-    * it's sorted relative to other children in descending order.
-    *
-    *                                   causal block of cursor
-    *                       ------------------------------------------------
-    *  Weave:           ... [cursor] [child1] ... [child2] ... [child3] ... [not child]
-    *  Block indices:           0         1          c2'          c3'           end'
-    *  Weave indices:          c0        c1          c2           c3            end
-    */
-    let pos = 0;
-    let len = 0;
-    walkCausalBlock(this.weave.slice(causeIdx), (a: Atom) => {
-      len += 1;
-      // TODO: if there are new operation priorities, this should be revisited
-      if (Atom.compare(a, atom) < 0) {
-        pos = len;
-        return false;
-      }
-
-      return true;
-    });
-
-    const index = pos > 0
-      ? causeIdx + pos
-      : causeIdx + len + 1;
-    this.insertAtomAtWeave(atom, index);
-    return index;
   }
 
   /**
@@ -170,44 +98,6 @@ export default class CausalTree {
   }
 
   /**
-   * Deletes an atom from the weave.
-   * @param atomID - id of the atom to be deleted
-   */
-  deleteAtom(atomID: AtomId): void {
-    if (atomID.timestamp === 0) return;
-    const deleteAtom = new Delete();
-    this.insertAtomFromValue(deleteAtom, atomID);
-  }
-
-  /**
-   * Ignores deleted atoms in the weave
-   * @returns an array of atoms
-   *
-   * Time complexity of O(weave.length)
-   */
-  filterDeletedAtoms(): Atom[] {
-    const atoms: Atom[] = [];
-    for (let i = 0; i < this.weave.length;) {
-      const element = this.weave[i];
-      const next = i === this.weave.length - 1 ? null : this.weave[i + 1];
-      if (!next) {
-        atoms.push(element);
-        break;
-      }
-
-      if (next.value instanceof Delete) {
-        if (isContainer(element)) i += causalBlockLength(this.weave.slice(i));
-        else i += 2;
-      } else {
-        atoms.push(element);
-        i += 1;
-      }
-    }
-
-    return atoms;
-  }
-
-  /**
    * Returns the tree weave as a readable array string (result).
    */
   toString(): any[] {
@@ -240,6 +130,116 @@ export default class CausalTree {
     }
 
     return elements;
+  }
+
+  getAtomIndexAtWeave(atomID: AtomId): number {
+    if (atomID.timestamp === 0) return -1;
+    const idx = this.weave.findIndex((atom) => atom.id === atomID);
+    return idx === -1 ? this.weave.length : idx;
+  }
+
+  /**
+   * Ignores deleted atoms in the weave
+   * @returns an array of atoms
+   *
+   * Time complexity of O(weave.length)
+   */
+  filterDeletedAtoms(): Atom[] {
+    const atoms: Atom[] = [];
+    for (let i = 0; i < this.weave.length;) {
+      const element = this.weave[i];
+      const next = i === this.weave.length - 1 ? null : this.weave[i + 1];
+      if (!next) {
+        atoms.push(element);
+        break;
+      }
+
+      if (next.value instanceof Delete) {
+        if (isContainer(element)) i += causalBlockLength(this.weave.slice(i));
+        else i += 2;
+      } else {
+        atoms.push(element);
+        i += 1;
+      }
+    }
+
+    return atoms;
+  }
+
+  /**
+   * Inserts an atom in the given index of the weave (former insertAtom).
+   *
+   * Time complexity of O(weave.length).
+   * @param index - position at the weave
+   */
+  protected insertAtomAtWeave(atom: Atom, index: number): void {
+    this.weave.splice(index, 0, atom);
+  }
+
+  /**
+     * Inserts an atom at the end of given site's yarn.
+     *
+     * Time complexity of O(yarn.length).
+     * @param site - index of the site in the sitemap
+     */
+  protected insertAtomAtYarn(atom: Atom, site: number): void {
+    this.yarns[site].push(atom);
+  }
+
+  /**
+     * Inserts an atom in the weave given its cause atom id (former insertAtomAtCursor).
+     *
+     * Time complexity of O(weave.length + (avg. block size)).
+     * @returns index of the inserted atom in the weave.
+     */
+  protected insertChildAtom(atom: Atom, cause: AtomId): number {
+    const causeIdx = this.getAtomIndexAtWeave(cause);
+    if (causeIdx === -1) {
+      this.insertAtomAtWeave(atom, 0);
+      return -1;
+    }
+
+    if (causeIdx === this.weave.length) {
+      throw new Error('Invalid cause atom');
+    }
+
+    /** Search for position in weave that atom should be inserted, in a way that
+      * it's sorted relative to other children in descending order.
+      *
+      *                                   causal block of cursor
+      *                       ------------------------------------------------
+      *  Weave:           ... [cursor] [child1] ... [child2] ... [child3] ... [not child]
+      *  Block indices:           0         1          c2'          c3'           end'
+      *  Weave indices:          c0        c1          c2           c3            end
+      */
+    let pos = 0;
+    let len = 0;
+    walkCausalBlock(this.weave.slice(causeIdx), (a: Atom) => {
+      len += 1;
+      // TODO: if there are new operation priorities, this should be revisited
+      if (Atom.compare(a, atom) < 0) {
+        pos = len;
+        return false;
+      }
+
+      return true;
+    });
+
+    const index = pos > 0
+      ? causeIdx + pos
+      : causeIdx + len + 1;
+    this.insertAtomAtWeave(atom, index);
+    return index;
+  }
+
+  /**
+   * Deletes an atom from the weave.
+   * @param atomID - id of the atom to be deleted
+   */
+  protected deleteAtom(atomID: AtomId): void {
+    if (atomID.timestamp === 0) return;
+    const deleteAtom = new Delete();
+    this.insertAtomFromValue(deleteAtom, atomID);
   }
 
   /**
