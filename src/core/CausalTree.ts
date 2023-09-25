@@ -80,12 +80,13 @@ export default class CausalTree {
    * Inserts an atom in the weave given its cause atom id (former insertAtomAtCursor).
    *
    * Time complexity of O(weave.length + (avg. block size)).
+   * @returns index of the inserted atom in the weave.
    */
-  insertChildAtom(atom: Atom, cause: AtomId): void {
+  insertChildAtom(atom: Atom, cause: AtomId): number {
     const causeIdx = this.getAtomIndexAtWeave(cause);
     if (causeIdx === -1) {
       this.insertAtomAtWeave(atom, 0);
-      return;
+      return -1;
     }
 
     if (causeIdx === this.weave.length) {
@@ -118,14 +119,16 @@ export default class CausalTree {
       ? causeIdx + pos
       : causeIdx + len + 1;
     this.insertAtomAtWeave(atom, index);
+    return index;
   }
 
   /**
    * Creates and inserts a new atom in the weave (former addAtom).
    *
    * Time complexity of O(weave.length + log(sitemap.length)).
+   * @returns id and index of the inserted atom.
    */
-  insertAtomFromValue(value: AtomValue, cause: AtomId): AtomId {
+  insertAtomFromValue(value: AtomValue, cause: AtomId): [AtomId, number] {
     this.timestamp += 1;
     if (this.timestamp === 0) throw new Error('Timestamp overflow');
 
@@ -137,9 +140,9 @@ export default class CausalTree {
 
     const atomId = new AtomId(this.siteIdx, this.yarns[this.siteIdx].length, this.timestamp);
     const atom = new Atom(atomId, cause, value);
-    this.insertChildAtom(atom, cause);
+    const index = this.insertChildAtom(atom, cause);
     this.insertAtomAtYarn(atom, this.siteIdx);
-    return atomId;
+    return [atomId, index];
   }
 
   /**
@@ -147,9 +150,10 @@ export default class CausalTree {
    * @returns id of the inserted atom
    */
   insertString(): AtomId {
+    this.clean();
     const root = new AtomId(0, 0, 0);
     const insertStr = new InsertString();
-    const id = this.insertAtomFromValue(insertStr, root);
+    const [id] = this.insertAtomFromValue(insertStr, root);
     return id;
   }
 
@@ -158,9 +162,10 @@ export default class CausalTree {
    * @returns id of the inserted atom
    */
   insertCounter(): AtomId {
+    this.clean();
     const root = new AtomId(0, 0, 0);
     const insertCtr = new InsertCounter();
-    const id = this.insertAtomFromValue(insertCtr, root);
+    const [id] = this.insertAtomFromValue(insertCtr, root);
     return id;
   }
 
@@ -235,5 +240,13 @@ export default class CausalTree {
     }
 
     return elements;
+  }
+
+  /**
+   * Clears the tree weave and yarns.
+   */
+  private clean(): void {
+    this.weave = [];
+    this.yarns = [[]];
   }
 }
