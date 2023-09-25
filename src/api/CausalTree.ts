@@ -1,28 +1,55 @@
 import AtomId from '../core/AtomId';
-import CausalTree from '../core/CausalTree';
+import CausalTreeCore from '../core/CausalTree';
 import TreePosition from '../core/TreePosition';
 import InsertString from '../core/operations/string/InsertString';
+import { Register } from './Register';
 import { Str } from './Str';
+import { Value } from './Value';
 
-export default class ICausalTree extends CausalTree {
+/**
+ * This is a wrapper over CausalTreeCore that provides a more convenient API,
+ * and also hides implementation details.
+ */
+export default class CausalTree implements Register {
+  private tree: CausalTreeCore;
+
+  constructor() {
+    this.tree = new CausalTreeCore();
+  }
+
+  setString(): Str {
+    const id = this.tree.insertString();
+    return this.stringValue(id);
+  }
+
+  toString(): any[] {
+    return this.tree.toString();
+  }
+
+  // TODO: this should be reimplemented when having other data types besides
+  // string.
+  value(): Value | null {
+    const atoms = this.tree.filterDeletedAtoms();
+    if (atoms.length === 0) {
+      return null;
+    }
+
+    return this.stringValue(atoms[0].id);
+  }
+
   /**
    * @returns a Str wrapper over InsertString
    */
-  stringValue(id: AtomId): Str {
-    const idx = this.getAtomIndexAtWeave(id);
-    const atom = this.weave[idx];
+  private stringValue(id: AtomId): Str {
+    const idx = this.tree.getAtomIndexAtWeave(id);
+    const atom = this.tree.weave[idx];
 
     if (!(atom.value instanceof InsertString)) {
       throw new Error(`Atom ${atom.toString()} is not an InsertString`);
     }
 
     return new Str(
-      new TreePosition(this, id, idx),
+      new TreePosition(this.tree, id, idx),
     );
-  }
-
-  setString(): Str {
-    const id = this.insertString();
-    return this.stringValue(id);
   }
 }
