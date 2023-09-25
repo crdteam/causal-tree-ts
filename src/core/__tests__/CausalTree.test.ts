@@ -38,11 +38,11 @@ describe('CausalTree', () => {
     it('should get the final value of a string weave', () => {
       const tree = new CausalTree();
       const id1 = tree.insertString();
-// [str]:id1 -- c:id6
-//   '- a:id2 -- r:id7 -- ' ':id9
-//      |        '- s:id8
-//      '- t:id3 -- o:id4 -- r:id10
-//                  '- m:id5
+      // [str]:id1 -- c:id6
+      //   '- a:id2 -- r:id7 -- ' ':id9
+      //      |        '- s:id8
+      //      '- t:id3 -- o:id4 -- r:id10
+      //                  '- m:id5
       const [id2] = tree.insertAtomFromValue(new InsertChar('a'), id1);
       const [id3] = tree.insertAtomFromValue(new InsertChar('t'), id2);
       const [id4] = tree.insertAtomFromValue(new InsertChar('o'), id3);
@@ -150,15 +150,15 @@ describe('CausalTree', () => {
     it('should allow multiple deletions consistently', () => {
       const tree = new CausalTree();
       const id1 = tree.insertString();
+      // [str]:id1 -- o
+      //   '- c:id2 -- [del]
+      //      '- r:id3 -- m
+      //         '- d:id4 -- [del]
+      //            '- t:id5 -- [del]
       const [id2] = tree.insertAtomFromValue(new InsertChar('c'), id1);
       const [id3] = tree.insertAtomFromValue(new InsertChar('r'), id2);
       const [id4] = tree.insertAtomFromValue(new InsertChar('d'), id3);
       const [id5] = tree.insertAtomFromValue(new InsertChar('t'), id4);
-// [str]:id1 -- o
-//   '- c:id2 -- [del]
-//      '- r:id3 -- m
-//         '- d:id4 -- [del]
-//            '- t:id5 -- [del]
       tree.deleteAtom(id2);
       tree.insertAtomFromValue(new InsertChar('o'), id1);
       tree.deleteAtom(id4);
