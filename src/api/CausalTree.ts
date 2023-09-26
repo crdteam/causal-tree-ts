@@ -45,6 +45,10 @@ export default class CausalTree implements Register {
     this.tree.deleteAtom(atom.id);
   }
 
+  dumpWeave(): string[] {
+    return this.tree.weave.map((atom) => atom.toString());
+  }
+
   /**
    * @returns a Str wrapper over InsertString
    */
