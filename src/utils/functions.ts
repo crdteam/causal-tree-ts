@@ -49,12 +49,12 @@ export const walkCausalBlockNoDelete = (
   for (let i = 0; i < causalBlock.length; pos = headPos + i, isDeleted = false) {
     const atom = block[i];
     // Check if atom is deleted (and walk through all Delete atoms)
-    let valueIsDelete = false;
-    do {
-      i += 1;
-      valueIsDelete = atom.value instanceof Delete;
-      if (valueIsDelete) isDeleted = true;
-    } while (valueIsDelete && i < causalBlock.length);
+    for (i += 1; i < causalBlock.length; i += 1) {
+      if (block[i].value instanceof Delete) isDeleted = true;
+      else break;
+    }
+
+    // console.log('atom', atom.toString(), i, isDeleted);
 
     // Walks through causal block until the callback function returns false
     if (!callback(atom, pos, isDeleted)) break;
