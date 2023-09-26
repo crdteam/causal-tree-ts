@@ -77,11 +77,11 @@ export class StrCursor implements Cursor {
    * The last known position of the head (InsertString atom) in the tree's
    * weave.
    */
-  private lastKnownHeadPosition: number;
+  private lastKnownHeadPos: number;
 
   constructor(treePosition: TreePosition) {
     this.treePosition = treePosition;
-    this.lastKnownHeadPosition = treePosition.lastKnownPos;
+    this.lastKnownHeadPos = treePosition.lastKnownPos;
   }
 
   /**
@@ -99,13 +99,13 @@ export class StrCursor implements Cursor {
      */
     const c0 = this.treePosition.lastKnownPos;
     const c1 = this.treePosition.getIndex();
-    const s0 = this.lastKnownHeadPosition;
+    const s0 = this.lastKnownHeadPos;
     let headPos = -1;
     for (let i = s0 + c1 - c0; i >= s0; i -= 1) {
       const atom = this.treePosition.getAtomAtIndex(i);
       if (atom.value instanceof InsertString) {
         headPos = i;
-        this.lastKnownHeadPosition = i;
+        this.lastKnownHeadPos = i;
         break;
       }
     }
@@ -134,6 +134,15 @@ export class StrCursor implements Cursor {
 
     const str = this.getString();
     if (i >= str.length()) throw new Error(`Index out of range: ${i}`);
+
+    if (i === -1) {
+      this.treePosition = new TreePosition(
+        str.treePosition.getTree(),
+        str.treePosition.getAtom().id,
+        str.treePosition.lastKnownPos,
+      );
+      return;
+    }
 
     let idxPos = -1;
     let count = 0;
