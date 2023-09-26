@@ -50,120 +50,10 @@ export default class CausalTree {
     return this.yarns[atomID.site][atomID.index];
   }
 
-  /**
-   * Creates and inserts a new atom in the weave (former addAtom).
-   *
-   * Time complexity of O(weave.length + log(sitemap.length)).
-   * @returns id and index of the inserted atom.
-   */
-  insertAtomFromValue(value: AtomValue, cause: AtomId): [AtomId, number] {
-    this.timestamp += 1;
-    if (this.timestamp === 0) throw new Error('Timestamp overflow');
-
-    if (cause.timestamp > 0) {
-      const causeAtom = this.getAtom(cause);
-      if (!causeAtom) throw new Error('Invalid cause atom');
-      causeAtom.value.validateChild(value);
-    }
-
-    const atomId = new AtomId(this.siteIdx, this.yarns[this.siteIdx].length, this.timestamp);
-    const atom = new Atom(atomId, cause, value);
-    const index = this.insertChildAtom(atom, cause);
-    this.insertAtomAtYarn(atom, this.siteIdx);
-    return [atomId, index];
-  }
-
-  /**
-   * Inserts a new string container atom at the root of the weave.
-   * @returns id of the inserted atom
-   */
-  insertString(): AtomId {
-    this.clean();
-    const root = new AtomId(0, 0, 0);
-    const insertStr = new InsertString();
-    const [id] = this.insertAtomFromValue(insertStr, root);
-    return id;
-  }
-
-  /**
-   * Inserts a new counter container atom at the root of the weave.
-   * @returns id of the inserted atom
-   */
-  insertCounter(): AtomId {
-    this.clean();
-    const root = new AtomId(0, 0, 0);
-    const insertCtr = new InsertCounter();
-    const [id] = this.insertAtomFromValue(insertCtr, root);
-    return id;
-  }
-
-  /**
-   * Returns the tree weave as a readable array string (result).
-   */
-  toString(): any[] {
-    const atoms = this.filterDeletedAtoms();
-    const elements: any[] = [];
-
-    for (let i = 0; i < atoms.length;) {
-      const curr = atoms[i];
-
-      if (isContainer(curr)) {
-        const len = causalBlockLength(atoms.slice(i));
-        const causalBlock = atoms.slice(i + 1, i + len + 1);
-
-        if (curr.value instanceof InsertString) {
-          const str = causalBlock
-            .map((a) => a.value.toString())
-            .join('');
-          elements.push(str);
-        } else if (curr.value instanceof InsertCounter) {
-          const sum = causalBlock
-            .map((a) => a.value.content)
-            .reduce((a, b) => a + b, 0);
-          elements.push(sum);
-        }
-
-        i += len;
-      } else {
-        throw new Error(`Atom without a container: ${curr.value.toString(true)}. AtomId: ${curr.id.toString()}`);
-      }
-    }
-
-    return elements;
-  }
-
   getAtomIndexAtWeave(atomID: AtomId): number {
     if (atomID.timestamp === 0) return -1;
     const idx = this.weave.findIndex((atom) => atom.id === atomID);
     return idx === -1 ? this.weave.length : idx;
-  }
-
-  /**
-   * Ignores deleted atoms in the weave
-   * @returns an array of atoms
-   *
-   * Time complexity of O(weave.length)
-   */
-  filterDeletedAtoms(): Atom[] {
-    const atoms: Atom[] = [];
-    for (let i = 0; i < this.weave.length;) {
-      const element = this.weave[i];
-      const next = i === this.weave.length - 1 ? null : this.weave[i + 1];
-      if (!next) {
-        atoms.push(element);
-        break;
-      }
-
-      if (next.value instanceof Delete) {
-        if (isContainer(element)) i += causalBlockLength(this.weave.slice(i));
-        else i += 2;
-      } else {
-        atoms.push(element);
-        i += 1;
-      }
-    }
-
-    return atoms;
   }
 
   /**
@@ -233,6 +123,53 @@ export default class CausalTree {
   }
 
   /**
+   * Creates and inserts a new atom in the weave (former addAtom).
+   *
+   * Time complexity of O(weave.length + log(sitemap.length)).
+   * @returns id and index of the inserted atom.
+   */
+  insertAtomFromValue(value: AtomValue, cause: AtomId): [AtomId, number] {
+    this.timestamp += 1;
+    if (this.timestamp === 0) throw new Error('Timestamp overflow');
+
+    if (cause.timestamp > 0) {
+      const causeAtom = this.getAtom(cause);
+      if (!causeAtom) throw new Error('Invalid cause atom');
+      causeAtom.value.validateChild(value);
+    }
+
+    const atomId = new AtomId(this.siteIdx, this.yarns[this.siteIdx].length, this.timestamp);
+    const atom = new Atom(atomId, cause, value);
+    const index = this.insertChildAtom(atom, cause);
+    this.insertAtomAtYarn(atom, this.siteIdx);
+    return [atomId, index];
+  }
+
+  /**
+   * Inserts a new string container atom at the root of the weave.
+   * @returns id of the inserted atom
+   */
+  insertString(): AtomId {
+    this.clean();
+    const root = new AtomId(0, 0, 0);
+    const insertStr = new InsertString();
+    const [id] = this.insertAtomFromValue(insertStr, root);
+    return id;
+  }
+
+  /**
+   * Inserts a new counter container atom at the root of the weave.
+   * @returns id of the inserted atom
+   */
+  insertCounter(): AtomId {
+    this.clean();
+    const root = new AtomId(0, 0, 0);
+    const insertCtr = new InsertCounter();
+    const [id] = this.insertAtomFromValue(insertCtr, root);
+    return id;
+  }
+
+  /**
    * Deletes an atom from the weave.
    * @param atomID - id of the atom to be deleted
    */
@@ -240,6 +177,69 @@ export default class CausalTree {
     if (atomID.timestamp === 0) return;
     const deleteAtom = new Delete();
     this.insertAtomFromValue(deleteAtom, atomID);
+  }
+
+  /**
+   * Ignores deleted atoms in the weave
+   * @returns an array of atoms
+   *
+   * Time complexity of O(weave.length)
+   */
+  filterDeletedAtoms(): Atom[] {
+    const atoms: Atom[] = [];
+    for (let i = 0; i < this.weave.length;) {
+      const element = this.weave[i];
+      const next = i === this.weave.length - 1 ? null : this.weave[i + 1];
+      if (!next) {
+        atoms.push(element);
+        break;
+      }
+
+      if (next.value instanceof Delete) {
+        if (isContainer(element)) i += causalBlockLength(this.weave.slice(i));
+        else i += 2;
+      } else {
+        atoms.push(element);
+        i += 1;
+      }
+    }
+
+    return atoms;
+  }
+
+  /**
+   * Returns the tree weave as a readable array string (result).
+   */
+  toString(): any[] {
+    const atoms = this.filterDeletedAtoms();
+    const elements: any[] = [];
+
+    for (let i = 0; i < atoms.length;) {
+      const curr = atoms[i];
+
+      if (isContainer(curr)) {
+        const len = causalBlockLength(atoms.slice(i));
+        const causalBlock = atoms.slice(i + 1, i + len + 1);
+
+        if (curr.value instanceof InsertString) {
+          const str = causalBlock
+            .map((a) => a.value.toString())
+            .join('');
+          elements.push(str);
+        } else if (curr.value instanceof InsertCounter) {
+          const sum = causalBlock
+            .map((a) => a.value.content)
+            .reduce((a, b) => a + b, 0);
+          elements.push(sum);
+        }
+
+        i += len;
+      } else {
+        throw new Error(`Atom without a container: ${curr.value.toString(true)}. AtomId: ${curr.id.toString()}`);
+      }
+    }
+
+    return elements;
   }
 
   /**
