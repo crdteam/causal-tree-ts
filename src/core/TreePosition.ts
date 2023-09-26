@@ -81,6 +81,11 @@ export default class TreePosition {
    * each non-deleted atom.
    */
   walk(callback: (atom: Atom, pos: number, isDeleted: boolean) => boolean) {
-    walkCausalBlockNoDelete(this.tree.weave, this.getIndex(), callback);
+    const pos = this.getIndex();
+    walkCausalBlockNoDelete(
+      this.tree.weave.slice(pos),
+      pos,
+      callback,
+    );
   }
 }
