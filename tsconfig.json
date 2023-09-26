@@ -3,9 +3,13 @@
     "target": "es6",
     "module": "node16",
     "outDir": "dist",
-    "rootDir": ".",
+    "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "declaration": true,
   },
+  "include": [
+    "src/**/*.ts"
+  ],
 }
