@@ -1,7 +1,12 @@
 {
-  "name": "note-taking-app",
+  "name": "client",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/crdteam/causal-tree-ts",
+    "directory": "demo/client"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
