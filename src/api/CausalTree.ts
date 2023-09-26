@@ -38,6 +38,14 @@ export default class CausalTree implements Register {
   }
 
   /**
+   * Deletes the whole string, given a Str wrapper.
+   */
+  deleteString(str: Str): void {
+    const atom = str.treePosition.getAtom();
+    this.tree.deleteAtom(atom.id);
+  }
+
+  /**
    * @returns a Str wrapper over InsertString
    */
   private stringValue(id: AtomId): Str {
