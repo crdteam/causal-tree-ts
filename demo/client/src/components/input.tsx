@@ -21,37 +21,31 @@ function TextEditor() {
 
   const handleTextChange = (e: any) => {
     const newText: string = e.target.value;
-    const selectionStart = e.target.selectionStart;
+    const selectionStart: number = e.target.selectionStart;
+
+    if(ctCursor === null) throw new Error('Cursor is null');
 
     // Check for added or removed characters
     if (newText.length > previousTextRef.current.length) {
-      // Character added
       const addedCharacter = newText.charAt(selectionStart - 1);
-      console.log(`Added character: ${addedCharacter} at position ${selectionStart - 1}`);
       
-      // Adds equivalent CT operation
       if (selectionStart !== previousCursorPosRef.current + 1) {
-        console.log('moving cursor');
-        console.log(`selectionStart: ${selectionStart}, cursorPosition: ${previousCursorPosRef.current}`);
-        ctCursor?.index(selectionStart - 2);
+        // Move cursor to the correct position
+        ctCursor.index(selectionStart - 2);
       }
-      ctCursor?.insert(addedCharacter);
+
+      ctCursor.insert(addedCharacter);
     } else if (newText.length < previousTextRef.current.length) {
-      // Character removed
       const removedCharacter = previousTextRef.current.charAt(selectionStart);
-      console.log(`Removed character: ${removedCharacter} at position ${selectionStart}`);
       
-      // Adds equivalent CT operation
       if (selectionStart !== previousCursorPosRef.current - 1) {
-        console.log('moving cursor');
-        console.log(`selectionStart: ${selectionStart}, cursorPosition: ${previousCursorPosRef.current}`);
-        ctCursor?.index(selectionStart);
+        // Move cursor to the correct position
+        ctCursor.index(selectionStart);
       }
-      ctCursor?.delete();
+
+      ctCursor.delete();
     }
     
-    console.log('ct', causalTree.toString())
-
     previousTextRef.current = newText;
     previousCursorPosRef.current = selectionStart;
   };
