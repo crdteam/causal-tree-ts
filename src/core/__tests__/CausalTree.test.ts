@@ -46,12 +46,12 @@ describe('CausalTree', () => {
       const [id2] = tree.insertAtomFromValue(new InsertChar('a'), id1);
       const [id3] = tree.insertAtomFromValue(new InsertChar('t'), id2);
       const [id4] = tree.insertAtomFromValue(new InsertChar('o'), id3);
-      const [id5] = tree.insertAtomFromValue(new InsertChar('m'), id4);
-      const [id6] = tree.insertAtomFromValue(new InsertChar('c'), id1);
+      tree.insertAtomFromValue(new InsertChar('m'), id4);
+      tree.insertAtomFromValue(new InsertChar('c'), id1);
       const [id7] = tree.insertAtomFromValue(new InsertChar('r'), id2);
-      const [id8] = tree.insertAtomFromValue(new InsertChar('s'), id7);
-      const [id9] = tree.insertAtomFromValue(new InsertChar(' '), id7);
-      const [id10] = tree.insertAtomFromValue(new InsertChar('r'), id4);
+      tree.insertAtomFromValue(new InsertChar('s'), id7);
+      tree.insertAtomFromValue(new InsertChar(' '), id7);
+      tree.insertAtomFromValue(new InsertChar('r'), id4);
 
       expect(tree.toString()[0]).toEqual('car storm');
     });
@@ -62,12 +62,12 @@ describe('CausalTree', () => {
       const [id2] = tree.insertAtomFromValue(new InsertAdd(1), id1);
       const [id3] = tree.insertAtomFromValue(new InsertAdd(-2), id2);
       const [id4] = tree.insertAtomFromValue(new InsertAdd(3), id3);
-      const [id5] = tree.insertAtomFromValue(new InsertAdd(4), id4);
-      const [id6] = tree.insertAtomFromValue(new InsertAdd(-5), id1);
+      tree.insertAtomFromValue(new InsertAdd(4), id4);
+      tree.insertAtomFromValue(new InsertAdd(-5), id1);
       const [id7] = tree.insertAtomFromValue(new InsertAdd(6), id2);
-      const [id8] = tree.insertAtomFromValue(new InsertAdd(-7), id7);
-      const [id9] = tree.insertAtomFromValue(new InsertAdd(-8), id7);
-      const [id10] = tree.insertAtomFromValue(new InsertAdd(9), id4);
+      tree.insertAtomFromValue(new InsertAdd(-7), id7);
+      tree.insertAtomFromValue(new InsertAdd(-8), id7);
+      tree.insertAtomFromValue(new InsertAdd(9), id4);
 
       expect(tree.toString()[0]).toEqual(1);
     });
@@ -86,8 +86,8 @@ describe('CausalTree', () => {
       const tree = new CausalTree();
       const id1 = tree.insertString();
       const [id2] = tree.insertAtomFromValue(new InsertChar('a'), id1);
-      const [id3] = tree.insertAtomFromValue(new InsertChar('t'), id1);
-      const [id4] = tree.insertAtomFromValue(new InsertChar('i'), id1);
+      tree.insertAtomFromValue(new InsertChar('t'), id1);
+      tree.insertAtomFromValue(new InsertChar('i'), id1);
 
       tree.deleteAtom(id2);
 
@@ -167,6 +167,30 @@ describe('CausalTree', () => {
 
       expect(tree.weave.length).toEqual(10);
       expect(tree.toString()[0]).toEqual('orm');
+    });
+  });
+  describe('fork', () => {
+    it('should return a new valid CT with same weave and yarns', () => {
+      const tree = new CausalTree();
+      const id1 = tree.insertString();
+      const [id2] = tree.insertAtomFromValue(new InsertChar('a'), id1);
+      tree.insertAtomFromValue(new InsertChar('t'), id1);
+      tree.insertAtomFromValue(new InsertChar('i'), id1);
+
+      const forked = tree.fork();
+
+      expect(tree.sitemap.length).toEqual(2);
+      expect(tree.yarns.length).toEqual(2);
+      expect(tree.siteIdx).not.toEqual(forked.siteIdx);
+      expect(forked.sitemap).toEqual(tree.sitemap);
+      expect(forked.weave).toEqual(tree.weave);
+      expect(forked.yarns).toEqual(tree.yarns);
+      forked.yarns.forEach((yarn, i) => {
+        expect(yarn).toEqual(tree.yarns[i]);
+      });
+      expect(forked.toString()).toEqual(['ita']);
+      expect(() => forked.insertAtomFromValue(new Delete(), id2)).not.toThrow();
+      expect(forked.toString()).toEqual(['it']);
     });
   });
 });
