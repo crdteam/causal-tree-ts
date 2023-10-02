@@ -182,6 +182,7 @@ describe('CausalTree', () => {
       expect(tree.sitemap.length).toEqual(2);
       expect(tree.yarns.length).toEqual(2);
       expect(tree.siteIdx).not.toEqual(forked.siteIdx);
+      expect(tree.sitemap[tree.siteIdx]).not.toEqual(forked.sitemap[forked.siteIdx]);
       expect(forked.sitemap).toEqual(tree.sitemap);
       expect(forked.weave).toEqual(tree.weave);
       expect(forked.yarns).toEqual(tree.yarns);
@@ -191,6 +192,60 @@ describe('CausalTree', () => {
       expect(forked.toString()).toEqual(['ita']);
       expect(() => forked.insertAtomFromValue(new Delete(), id2)).not.toThrow();
       expect(forked.toString()).toEqual(['it']);
+    });
+  });
+  describe('merge', () => {
+    it('should merge other valid CT into the current one', () => {
+      // [str]@1 -- a@1 -- [del]@2
+      //   '- t@1 -- c@2
+      //   '- i@1 -- [del]@2
+      //   '- e@2
+      const tree = new CausalTree();
+      const id1 = tree.insertString();
+      const [id2] = tree.insertAtomFromValue(new InsertChar('a'), id1);
+      const [id3] = tree.insertAtomFromValue(new InsertChar('t'), id1);
+      const [id4] = tree.insertAtomFromValue(new InsertChar('i'), id1);
+
+      const forked = tree.fork();
+      forked.insertAtomFromValue(new Delete(), id2);
+      forked.insertAtomFromValue(new Delete(), id4);
+      forked.insertAtomFromValue(new InsertChar('e'), id1);
+      forked.insertAtomFromValue(new InsertChar('c'), id3);
+
+      tree.merge(forked);
+
+      expect(tree.sitemap.length).toEqual(2);
+      expect(tree.yarns.length).toEqual(2);
+      expect(tree.siteIdx).not.toEqual(forked.siteIdx);
+      expect(forked.sitemap).toEqual(tree.sitemap);
+      expect(forked.weave).toEqual(tree.weave);
+      expect(forked.yarns).toEqual(tree.yarns);
+      forked.yarns.forEach((yarn, i) => {
+        expect(yarn).toEqual(tree.yarns[i]);
+      });
+      expect(forked.toString()).toEqual(['etc']);
+      expect(tree.toString()).toEqual(['etc']);
+    });
+    it('should throw error and apply no changes if there\'s some problem during merge', () => {
+      const tree = new CausalTree();
+      const id1 = tree.insertString();
+      const [id2] = tree.insertAtomFromValue(new InsertChar('a'), id1);
+      const [id3] = tree.insertAtomFromValue(new InsertChar('t'), id1);
+      const [id4] = tree.insertAtomFromValue(new InsertChar('i'), id1);
+
+      const forked = tree.fork();
+      forked.insertAtomFromValue(new Delete(), id2);
+      forked.insertAtomFromValue(new Delete(), id4);
+      forked.insertAtomFromValue(new InsertChar('e'), id1);
+      forked.insertAtomFromValue(new InsertChar('c'), id3);
+      const problematic = forked.fork();
+      problematic.weave.splice(0, 1); // invalidates weave
+
+      expect(() => tree.merge(problematic)).toThrow();
+
+      expect(tree.sitemap.length).toEqual(2);
+      expect(forked.toString()).toEqual(['etc']);
+      expect(tree.toString()).toEqual(['ita']);
     });
   });
 });
