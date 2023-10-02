@@ -29,13 +29,13 @@ const findSiteIndex = (sitemap: string[], siteUuid: string): number => {
 export default class CausalTree {
   weave: Atom[];
 
-  private sitemap: string[];
+  sitemap: string[];
 
-  private timestamp: number;
+  timestamp: number;
 
-  private yarns: Atom[][];
+  yarns: Atom[][];
 
-  private siteIdx: number;
+  siteIdx: number;
 
   constructor() {
     const siteUuid = getNewUuid();
@@ -248,5 +248,56 @@ export default class CausalTree {
   clean(): void {
     this.weave = [];
     this.yarns = [[]];
+  }
+
+  /**
+   * Fork a replicated tree into an independent object.
+   *
+   * Time complexity of O(weave.length + yarns.length).
+   */
+  fork(): CausalTree {
+    if (this.sitemap.length >= Number.MAX_SAFE_INTEGER) {
+      throw new Error('Sitemap overflow');
+    }
+
+    const newSiteId = getNewUuid();
+    const idx = findSiteIndex(this.sitemap, newSiteId);
+
+    if (idx === this.sitemap.length) {
+      this.sitemap.push(newSiteId);
+      this.yarns.push([]);
+    } else {
+      const localRemap = new IndexMap();
+
+      // For each site after the new site, shift its index by 1
+      for (let i = idx; i < this.sitemap.length; i += 1) {
+        localRemap.set(i, i + 1);
+      }
+
+      // Remaps atoms in yarns and weave
+      for (let i = 0; i < this.yarns.length; i += 1) {
+        for (let j = 0; j < this.yarns[i].length; j += 1) {
+          this.yarns[i][j].remapSiteInplace(localRemap);
+        }
+      }
+
+      for (let i = 0; i < this.weave.length; i += 1) {
+        this.weave[i].remapSiteInplace(localRemap);
+      }
+
+      // Adds new yarn and site to the tree
+      this.yarns.splice(idx, 0, []);
+      this.sitemap.splice(idx, 0, newSiteId);
+    }
+
+    this.timestamp += 1;
+
+    const tree = new CausalTree();
+    tree.timestamp = this.timestamp;
+    tree.siteIdx = idx;
+    tree.sitemap = [...this.sitemap];
+    tree.weave = [...this.weave];
+    tree.yarns = this.yarns.map((yarn) => [...yarn]);
+    return tree;
   }
 }
