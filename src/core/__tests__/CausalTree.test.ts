@@ -169,4 +169,28 @@ describe('CausalTree', () => {
       expect(tree.toString()[0]).toEqual('orm');
     });
   });
+  describe('fork', () => {
+    it('should return a new valid CT with same weave and yarns', () => {
+      const tree = new CausalTree();
+      const id1 = tree.insertString();
+      const [id2] = tree.insertAtomFromValue(new InsertChar('a'), id1);
+      const [id3] = tree.insertAtomFromValue(new InsertChar('t'), id1);
+      const [id4] = tree.insertAtomFromValue(new InsertChar('i'), id1);
+
+      const forked = tree.fork();
+
+      expect(tree.sitemap.length).toEqual(2);
+      expect(tree.yarns.length).toEqual(2);
+      expect(tree.siteIdx).not.toEqual(forked.siteIdx);
+      expect(forked.sitemap).toEqual(tree.sitemap);
+      expect(forked.weave).toEqual(tree.weave);
+      expect(forked.yarns).toEqual(tree.yarns);
+      forked.yarns.forEach((yarn, i) => {
+        expect(yarn).toEqual(tree.yarns[i]);
+      });
+      expect(forked.toString()).toEqual(['ita']);
+      expect(() => forked.insertAtomFromValue(new Delete(), id2)).not.toThrow();
+      expect(forked.toString()).toEqual(['it']);
+    });
+  });
 });
