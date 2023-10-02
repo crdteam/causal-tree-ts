@@ -13,8 +13,8 @@ import { Value } from './Value';
 export default class CausalTree implements Register {
   private tree: CausalTreeCore;
 
-  constructor() {
-    this.tree = new CausalTreeCore();
+  constructor(tree: CausalTreeCore = new CausalTreeCore()) {
+    this.tree = tree;
   }
 
   setString(): Str {
@@ -47,6 +47,14 @@ export default class CausalTree implements Register {
 
   dumpWeave(): string[] {
     return this.tree.weave.map((atom) => atom.toString());
+  }
+
+  /**
+   * Forks the current CausalTree, returning a new tree.
+   */
+  fork(): CausalTree {
+    const fork = new CausalTree(this.tree.fork());
+    return fork;
   }
 
   /**
