@@ -1,8 +1,8 @@
 import { OPERATION_PRIORITY_MAP } from '../../../utils/constants';
 import { AtomValue } from '../../AtomValue';
-import Delete from '../Delete';
+import { Delete } from '../Delete';
 
-export default class InsertChar implements AtomValue {
+export class InsertChar implements AtomValue {
   content: string;
 
   priority: number;
@@ -11,6 +11,14 @@ export default class InsertChar implements AtomValue {
     if (char.length !== 1) throw new Error('InsertChar content must be a single character');
     this.content = char;
     this.priority = OPERATION_PRIORITY_MAP.InsertChar;
+  }
+
+  static unmarshall(str: string): any {
+    return new InsertChar(str);
+  }
+
+  marshall(): string {
+    return this.toString();
   }
 
   toString(verbose = false): string {

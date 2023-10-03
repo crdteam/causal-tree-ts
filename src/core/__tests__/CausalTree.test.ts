@@ -1,9 +1,9 @@
 import CausalTree from '../CausalTree';
-import Delete from '../operations/Delete';
-import InsertAdd from '../operations/counter/InsertAdd';
-import InsertCounter from '../operations/counter/InsertCounter';
-import InsertChar from '../operations/string/InsertChar';
-import InsertString from '../operations/string/InsertString';
+import { Delete } from '../operations/Delete';
+import { InsertAdd } from '../operations/counter/InsertAdd';
+import { InsertCounter } from '../operations/counter/InsertCounter';
+import { InsertChar } from '../operations/string/InsertChar';
+import { InsertString } from '../operations/string/InsertString';
 
 describe('CausalTree', () => {
   describe('insertString', () => {

@@ -8,10 +8,15 @@
  * operation.
  * @property validateChild - A function that checks whether the given value can
  * be appended as a child.
+ * @property marshall - A function that returns a JSON representation of the
+ * operation.
+ * @property unmarshall - A function that returns an AtomValue from a JSON
+ * representation.
  */
 export interface AtomValue {
   content: any;
   priority: number;
   toString(verbose?: boolean): string;
   validateChild(child: AtomValue): void;
+  marshall(): string;
 }

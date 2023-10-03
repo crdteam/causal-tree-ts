@@ -1,7 +1,7 @@
 import AtomId from '../core/AtomId';
 import CausalTreeCore from '../core/CausalTree';
 import TreePosition from '../core/TreePosition';
-import InsertString from '../core/operations/string/InsertString';
+import { InsertString } from '../core/operations/string/InsertString';
 import { Register } from './Register';
 import { Str } from './Str';
 import { Value } from './Value';

@@ -1,7 +1,7 @@
 import { OPERATION_PRIORITY_MAP } from '../../../utils/constants';
 import { AtomValue } from '../../AtomValue';
 
-export default class InsertAdd implements AtomValue {
+export class InsertAdd implements AtomValue {
   content: number;
 
   priority: number;
@@ -13,6 +13,14 @@ export default class InsertAdd implements AtomValue {
 
     this.content = value;
     this.priority = OPERATION_PRIORITY_MAP.InsertAdd;
+  }
+
+  static unmarshall(str: string): InsertAdd {
+    return new InsertAdd(parseInt(str, 10));
+  }
+
+  marshall(): string {
+    return this.content.toString();
   }
 
   toString(verbose = false): string {

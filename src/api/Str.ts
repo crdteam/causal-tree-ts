@@ -1,8 +1,8 @@
 import Atom from '../core/Atom';
 import TreePosition from '../core/TreePosition';
-import Delete from '../core/operations/Delete';
-import InsertChar from '../core/operations/string/InsertChar';
-import InsertString from '../core/operations/string/InsertString';
+import { Delete } from '../core/operations/Delete';
+import { InsertChar } from '../core/operations/string/InsertChar';
+import { InsertString } from '../core/operations/string/InsertString';
 import Char from './Char';
 import { Cursor } from './Cursor';
 import { Value } from './Value';

@@ -3,9 +3,9 @@ import AtomId from './AtomId';
 import IndexMap from './IndexMap';
 import { causalBlockLength, getNewUuid, isContainer, walkCausalBlock } from '../utils/functions';
 import { AtomValue } from './AtomValue';
-import InsertString from './operations/string/InsertString';
-import Delete from './operations/Delete';
-import InsertCounter from './operations/counter/InsertCounter';
+import { InsertString } from './operations/string/InsertString';
+import { Delete } from './operations/Delete';
+import { InsertCounter } from './operations/counter/InsertCounter';
 
 /**
  * Returns the index where a site is (or should be) in the sitemap.

@@ -31,6 +31,15 @@ export default class AtomId {
     return a.timestamp - b.timestamp;
   }
 
+  static unmarshall(str: string): AtomId {
+    const [site, index, timestamp] = str.split(':');
+    return new AtomId(
+      parseInt(site, 10),
+      parseInt(index, 10),
+      parseInt(timestamp, 10),
+    );
+  }
+
   remapSite(map: IndexMap): AtomId {
     return new AtomId(map.get(this.site), this.index, this.timestamp);
   }
@@ -41,5 +50,9 @@ export default class AtomId {
 
   toString(): string {
     return `S${this.site}@T${this.timestamp}`;
+  }
+
+  marshall(): string {
+    return `${this.site}:${this.index}:${this.timestamp}`;
   }
 }

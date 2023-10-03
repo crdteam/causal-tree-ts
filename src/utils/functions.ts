@@ -1,8 +1,8 @@
 import { v1 as uuidv1 } from 'uuid';
 import type Atom from '../core/Atom';
-import InsertString from '../core/operations/string/InsertString';
-import InsertCounter from '../core/operations/counter/InsertCounter';
-import Delete from '../core/operations/Delete';
+import { InsertString } from '../core/operations/string/InsertString';
+import { InsertCounter } from '../core/operations/counter/InsertCounter';
+import { Delete } from '../core/operations/Delete';
 
 /**
  * @returns A new unique identifier (uuid v1).

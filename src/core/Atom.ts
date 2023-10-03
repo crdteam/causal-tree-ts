@@ -1,6 +1,7 @@
 import AtomId from './AtomId';
 import IndexMap from './IndexMap';
 import { AtomValue } from './AtomValue';
+import * as operations from './operations';
 
 /**
  * Atom represents an atomic operation within a replicated tree.
@@ -34,6 +35,16 @@ export default class Atom {
     return aPriority - bPriority;
   }
 
+  static unmarshall(str: string): Atom {
+    const [idStr, causeStr, valueCls, valueStr] = str.split(' ');
+    const value: AtomValue = (<any>operations)[valueCls].unmarshall(valueStr);
+    return new Atom(
+      AtomId.unmarshall(idStr),
+      AtomId.unmarshall(causeStr),
+      value,
+    );
+  }
+
   remapSite(map: IndexMap): Atom {
     return new Atom(
       this.id.remapSite(map),
@@ -49,5 +60,9 @@ export default class Atom {
 
   toString(): string {
     return `Atom(${this.id.toString()} ${this.cause.toString()} ${this.value.toString()})`;
+  }
+
+  marshall(): string {
+    return `${this.id.marshall()} ${this.cause.marshall()} ${this.value.constructor.name} ${this.value.marshall()}`;
   }
 }
