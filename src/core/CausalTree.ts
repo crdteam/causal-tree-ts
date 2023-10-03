@@ -356,6 +356,9 @@ export default class CausalTree {
         if (a1.id.timestamp < a2.id.timestamp) {
           finalWeave.push(a2);
           j += 1;
+        } else {
+          finalWeave.push(a1);
+          i += 1;
         }
       } else if (Atom.compare(a1, a2) >= 0) {
         // Atoms are concurrent; append first causal block, according to heads' order.
