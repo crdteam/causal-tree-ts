@@ -16,4 +16,11 @@ export default class IndexMap {
   set(index: number, value: number): void {
     if (index !== value) this.map[index] = value;
   }
+
+  /**
+   * @returns the number of entries in the map.
+   */
+  length(): number {
+    return Object.keys(this.map).length;
+  }
 }

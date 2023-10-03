@@ -300,4 +300,162 @@ export default class CausalTree {
     tree.yarns = this.yarns.map((yarn) => [...yarn]);
     return tree;
   }
+
+  /**
+   * Merges two sitemaps, returning the result.
+   *
+   * Time complexity of O(sitemap.length).
+   */
+  mergeSitemaps(sitemap1: string[], sitemap2: string[]): string[] {
+    const finalSitemap: string[] = [];
+
+    let i = 0;
+    let j = 0;
+    while (i < sitemap1.length && j < sitemap2.length) {
+      const s1 = sitemap1[i];
+      const s2 = sitemap2[j];
+
+      if (s1 === s2) {
+        finalSitemap.push(s1);
+        i += 1;
+        j += 1;
+      } else if (s1 < s2) {
+        finalSitemap.push(s1);
+        i += 1;
+      } else {
+        finalSitemap.push(s2);
+        j += 1;
+      }
+    }
+
+    if (i < sitemap1.length) finalSitemap.push(...sitemap1.slice(i));
+    if (j < sitemap2.length) finalSitemap.push(...sitemap2.slice(j));
+
+    return finalSitemap;
+  }
+
+  /**
+   * Same as mergeWeave, but with two different weaves, returning the result.
+   */
+  mergeWeaves(weave1: Atom[], weave2: Atom[]): Atom[] {
+    const finalWeave: Atom[] = [];
+
+    let i = 0;
+    let j = 0;
+    while (i < weave1.length && j < weave2.length) {
+      const a1 = weave1[i];
+      const a2 = weave2[j];
+
+      if (Atom.compare(a1, a2) === 0) {
+        // Atoms are equal, so we can just add one of them
+        finalWeave.push(a1);
+        i += 1;
+        j += 1;
+      } else if (a1.id.site === a2.id.site) {
+        // Atoms are from the same site, so we need only to compare their timestamps
+        if (a1.id.timestamp < a2.id.timestamp) {
+          finalWeave.push(a2);
+          j += 1;
+        } else {
+          finalWeave.push(a1);
+          i += 1;
+        }
+      } else if (Atom.compare(a1, a2) >= 0) {
+        // Atoms are concurrent; append first causal block, according to heads' order.
+        const n1 = i + causalBlockLength(weave1.slice(i));
+        finalWeave.splice(finalWeave.length, 0, ...weave1.slice(i, n1));
+        i = n1;
+      } else {
+        const n2 = j + causalBlockLength(weave2.slice(j));
+        finalWeave.splice(finalWeave.length, 0, ...weave2.slice(j, n2));
+        j = n2;
+      }
+    }
+
+    if (i < weave1.length) finalWeave.push(...weave1.slice(i));
+    if (j < weave2.length) finalWeave.push(...weave2.slice(j));
+
+    return finalWeave;
+  }
+
+  /**
+   * Remap atoms from local, returning the result.
+   *
+   * @param localRemap - index map of the local site
+   * @param length - length of the sitemap
+   *
+   * Time complexity of O(weave.length + yarns.length * sitemap.length).
+   */
+  remapAtoms(localRemap: IndexMap, length: number): [Atom[][], Atom[]] {
+    const yarns: Atom[][] = [...new Array(length)].map(() => []);
+    let weave: Atom[];
+    if (localRemap.length() > 0) {
+      // Remap atoms in yarns
+      for (let i = 0; i < this.yarns.length; i += 1) {
+        const iNew = localRemap.get(i);
+        yarns[iNew] = this.yarns[i].map((atom) => atom.remapSite(localRemap));
+      }
+
+      // Remap atoms in weave
+      weave = this.weave.map((atom) => atom.remapSite(localRemap));
+
+      return [yarns, weave];
+    }
+
+    for (let i = 0; i < this.yarns.length; i += 1) {
+      yarns[i] = [...this.yarns[i]];
+    }
+
+    weave = [...this.weave];
+
+    return [yarns, weave];
+  }
+
+  /**
+   * Merge updates the current state with that of another remote tree.
+   *
+   * Time complexity of O(weave.length ^ 2 + sitemap.length * log(sitemap.length)).
+   */
+  merge(remote: CausalTree): void {
+    // Merge sitemaps
+    const sitemap = this.mergeSitemaps(this.sitemap, remote.sitemap);
+    const siteIdx = findSiteIndex(sitemap, this.sitemap[this.siteIdx]);
+
+    // Compute site index remapping
+    const localRemap = new IndexMap();
+    const remoteRemap = new IndexMap();
+    this.sitemap.forEach((site, idx) => (
+      localRemap.set(idx, findSiteIndex(sitemap, site))
+    ));
+    remote.sitemap.forEach((site, idx) => (
+      remoteRemap.set(idx, findSiteIndex(sitemap, site))
+    ));
+
+    // Remap atoms from local
+    const [yarns, weave] = this.remapAtoms(localRemap, sitemap.length);
+
+    // Merge yarns
+    remote.yarns.forEach((yarn, idx) => {
+      const idxNew = remoteRemap.get(idx);
+      const start = yarns[idxNew].length;
+      const end = yarn.length;
+      const newAtoms = yarn.slice(start, end);
+      yarns[idxNew].splice(start, 0, ...newAtoms.map(
+        (atom) => atom.remapSite(remoteRemap),
+      ));
+    });
+
+    // Merge weave
+    const remoteWeave = remote.weave.map((atom) => atom.remapSite(remoteRemap));
+    const mergedWeave = this.mergeWeaves(weave, remoteWeave);
+
+    // Update tree
+    this.sitemap = sitemap;
+    this.siteIdx = siteIdx;
+    this.yarns = yarns;
+    // TODO: this next step may break current cursors
+    this.weave = mergedWeave;
+    if (remote.timestamp > this.timestamp) this.timestamp = remote.timestamp;
+    this.timestamp += 1;
+  }
 }
