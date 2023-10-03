@@ -378,10 +378,13 @@ export default class CausalTree {
   /**
    * Remap atoms from local, returning the result.
    *
+   * @param localRemap - index map of the local site
+   * @param length - length of the sitemap
+   *
    * Time complexity of O(weave.length + yarns.length * sitemap.length).
    */
-  remapAtoms(localRemap: IndexMap): [Atom[][], Atom[]] {
-    const yarns: Atom[][] = [[]];
+  remapAtoms(localRemap: IndexMap, length: number): [Atom[][], Atom[]] {
+    const yarns: Atom[][] = [...new Array(length)].map(() => []);
     let weave: Atom[];
     if (localRemap.length() > 0) {
       // Remap atoms in yarns
@@ -413,6 +416,7 @@ export default class CausalTree {
   merge(remote: CausalTree): void {
     // Merge sitemaps
     const sitemap = this.mergeSitemaps(this.sitemap, remote.sitemap);
+    const siteIdx = findSiteIndex(sitemap, this.sitemap[this.siteIdx]);
 
     // Compute site index remapping
     const localRemap = new IndexMap();
@@ -425,7 +429,7 @@ export default class CausalTree {
     ));
 
     // Remap atoms from local
-    const [yarns, weave] = this.remapAtoms(localRemap);
+    const [yarns, weave] = this.remapAtoms(localRemap, sitemap.length);
 
     // Merge yarns
     remote.yarns.forEach((yarn, idx) => {
@@ -444,6 +448,7 @@ export default class CausalTree {
 
     // Update tree
     this.sitemap = sitemap;
+    this.siteIdx = siteIdx;
     this.yarns = yarns;
     // TODO: this next step may break current cursors
     this.weave = mergedWeave;
