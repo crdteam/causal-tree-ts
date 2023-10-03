@@ -3,6 +3,7 @@ import IndexMap from '../IndexMap';
 import getAtom from '../../utils/factories/Atom';
 import getAtomId from '../../utils/factories/AtomId';
 import getAtomValue from '../../utils/factories/AtomValue';
+import AtomId from '../AtomId';
 
 describe('Atom', () => {
   describe('toString', () => {
@@ -56,6 +57,31 @@ describe('Atom', () => {
       expect(mappedAtom).not.toBe(atom);
       expect(mappedAtom.id.site).toEqual(newSiteIndex);
       expect(mappedAtom.cause.site).toEqual(newSiteIndex);
+    });
+  });
+  describe('marshall', () => {
+    it('should marshall atom correctly', () => {
+      const atom = getAtom(
+        { site: 3, timestamp: 2, index: 1 },
+        { site: 3, timestamp: 1, index: 0 },
+        { content: 'a' },
+      );
+      expect(atom.marshall()).toEqual(
+        '3:1:2 3:0:1 ConcreteAtomValue a',
+      );
+    });
+  });
+  describe('unmarshall', () => {
+    it('should unmarshall atom correctly', () => {
+      const atom = getAtom(
+        { site: 3, timestamp: 2, index: 1 },
+        { site: 3, timestamp: 1, index: 0 },
+        { content: 'a' },
+      );
+      const unmarshalledAtom = Atom.unmarshall(atom.marshall());
+      expect(AtomId.compare(unmarshalledAtom.id, atom.id)).toEqual(0);
+      expect(AtomId.compare(unmarshalledAtom.cause, atom.cause)).toEqual(0);
+      expect(unmarshalledAtom.value.toString()).toEqual(atom.value.toString());
     });
   });
 });
