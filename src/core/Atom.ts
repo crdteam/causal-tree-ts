@@ -3,6 +3,8 @@ import IndexMap from './IndexMap';
 import { AtomValue } from './AtomValue';
 import * as operations from './operations';
 
+const ATOM_STR_SEPARATOR = ')(';
+
 /**
  * Atom represents an atomic operation within a replicated tree.
  * @property id - The identifier of the atom.
@@ -36,7 +38,7 @@ export default class Atom {
   }
 
   static unmarshall(str: string): Atom {
-    const [idStr, causeStr, valueCls, valueStr] = str.split(' ');
+    const [idStr, causeStr, valueCls, valueStr] = str.split(ATOM_STR_SEPARATOR);
     const value: AtomValue = (<any>operations)[valueCls].unmarshall(valueStr);
     return new Atom(
       AtomId.unmarshall(idStr),
@@ -63,6 +65,14 @@ export default class Atom {
   }
 
   marshall(): string {
-    return `${this.id.marshall()} ${this.cause.marshall()} ${this.value.constructor.name} ${this.value.marshall()}`;
+    return `${
+      this.id.marshall()
+    }${ATOM_STR_SEPARATOR}${
+      this.cause.marshall()
+    }${ATOM_STR_SEPARATOR}${
+      this.value.constructor.name
+    }${ATOM_STR_SEPARATOR}${
+      this.value.marshall()
+    }`;
   }
 }
