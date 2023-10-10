@@ -67,7 +67,7 @@ describe('Atom', () => {
         { content: 'a' },
       );
       expect(atom.marshall()).toEqual(
-        '3:1:2 3:0:1 ConcreteAtomValue a',
+        '3:1:2)(3:0:1)(ConcreteAtomValue)(a',
       );
     });
   });
