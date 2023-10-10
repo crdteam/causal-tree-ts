@@ -58,6 +58,22 @@ export default class CausalTree implements Register {
   }
 
   /**
+   * Forks the current CausalTree into a new tree string.
+   */
+  forkString(): string {
+    const forkedCore = this.tree.fork();
+    return forkedCore.marshall();
+  }
+
+  /**
+   * Parses a CausalTree string and merges it into the current tree.
+   */
+  mergeString(str: string): void {
+    const tree = CausalTreeCore.unmarshall(str);
+    this.tree.merge(tree);
+  }
+
+  /**
    * @returns a Str wrapper over InsertString
    */
   private stringValue(id: AtomId): Str {
