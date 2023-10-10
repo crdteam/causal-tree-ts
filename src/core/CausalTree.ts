@@ -80,9 +80,11 @@ export default class CausalTree {
       .split(WEAVE_STR_SEPARATOR)
       .map((atomStr: string) => Atom.unmarshall(atomStr));
     const yarns = yarnsStrs.map((yarnStr: string) => (
-      yarnStr
-        .split(WEAVE_STR_SEPARATOR)
-        .map((atomStr: string) => Atom.unmarshall(atomStr))
+      yarnStr === ''
+        ? []
+        : yarnStr
+          .split(WEAVE_STR_SEPARATOR)
+          .map((atomStr: string) => Atom.unmarshall(atomStr))
     ));
 
     return new CausalTree({
