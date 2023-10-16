@@ -64,7 +64,7 @@ export default class TreePosition {
   }
 
   /**
-   * Checks if the pointed tom is deleted.
+   * Checks if the pointed atom is deleted.
    */
   isDeleted(): boolean {
     const idx = this.getIndex();
