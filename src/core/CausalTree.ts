@@ -39,6 +39,14 @@ const findSiteIndex = (sitemap: string[], siteUuid: string): number => {
   return left;
 };
 
+const parseAtomList = (str: string): Atom[] => (
+  str === ''
+    ? []
+    : str
+      .split(WEAVE_STR_SEPARATOR)
+      .map((atomStr: string) => Atom.unmarshall(atomStr))
+);
+
 export default class CausalTree {
   weave: Atom[];
 
@@ -52,11 +60,11 @@ export default class CausalTree {
 
   constructor(proto?: CausalTreePrototype) {
     if (proto) {
-      this.weave = proto.weave;
-      this.sitemap = proto.sitemap;
       this.timestamp = proto.timestamp;
-      this.yarns = proto.yarns;
       this.siteIdx = proto.siteIdx;
+      this.sitemap = [...proto.sitemap];
+      this.weave = [...proto.weave];
+      this.yarns = proto.yarns.map((yarn) => [...yarn]);
       return;
     }
 
@@ -76,16 +84,8 @@ export default class CausalTree {
       timestamp,
       siteIdx,
     } = JSON.parse(str);
-    const weave = weaveStr
-      .split(WEAVE_STR_SEPARATOR)
-      .map((atomStr: string) => Atom.unmarshall(atomStr));
-    const yarns = yarnsStrs.map((yarnStr: string) => (
-      yarnStr === ''
-        ? []
-        : yarnStr
-          .split(WEAVE_STR_SEPARATOR)
-          .map((atomStr: string) => Atom.unmarshall(atomStr))
-    ));
+    const weave = parseAtomList(weaveStr);
+    const yarns = yarnsStrs.map(parseAtomList);
 
     return new CausalTree({
       weave,
@@ -202,7 +202,7 @@ export default class CausalTree {
    * @returns id of the inserted atom
    */
   insertString(): AtomId {
-    this.clean();
+    if (this.weave.length > 0) throw new Error('Weave is not empty');
     const root = new AtomId(0, 0, 0);
     const insertStr = new InsertString();
     const [id] = this.insertAtomFromValue(insertStr, root);
@@ -214,7 +214,7 @@ export default class CausalTree {
    * @returns id of the inserted atom
    */
   insertCounter(): AtomId {
-    this.clean();
+    if (this.weave.length > 0) throw new Error('Weave is not empty');
     const root = new AtomId(0, 0, 0);
     const insertCtr = new InsertCounter();
     const [id] = this.insertAtomFromValue(insertCtr, root);
@@ -299,7 +299,7 @@ export default class CausalTree {
    */
   clean(): void {
     this.weave = [];
-    this.yarns = [[]];
+    this.yarns[this.siteIdx] = [];
   }
 
   /**
