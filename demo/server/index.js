@@ -11,17 +11,35 @@ const mergeState = (state) => {
 }
 
 const requestListener = (req, res) => {
-  if (req.url === '/fork') {
+  // Set up CORS headers to allow all origins. You might want to restrict this in production.
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // If it's a preflight OPTIONS request, respond with OK
+  if (req.method === 'OPTIONS') {
+    res.statusCode = 204; // No Content
+    res.end();
+    return;
+  }
+
+  if (req.url === '/content') {
     if (req.method === 'GET') {
+      const value = causalTree.toString();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ content: value }));
+      return;
+    }
+  }
+
+
+  if (req.url === '/fork') {
+    if (req.method === 'POST') {
       const fork = causalTree.forkString();
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ content: fork }));
       return;
     }
-
-    res.writeHead(405);
-    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
-    return;
   }
 
 
@@ -41,15 +59,11 @@ const requestListener = (req, res) => {
       req.on('end', () => {
         const { content: state } = JSON.parse(body);
         const newState = mergeState(state);
-        res.writeHead(200);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ content: newState }));
       });
       return;
     }
-
-    res.writeHead(405);
-    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
-    return;
   }
 
   res.writeHead(404);
