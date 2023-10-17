@@ -35,4 +35,8 @@ export class InsertAdd implements AtomValue {
 
     throw new Error(`Invalid child type for InsertAdd operation: ${child.constructor.name}`);
   }
+
+  getName(): string {
+    return 'InsertAdd';
+  }
 }

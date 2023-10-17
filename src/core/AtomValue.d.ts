@@ -12,6 +12,7 @@
  * operation.
  * @property unmarshall - A function that returns an AtomValue from a JSON
  * representation.
+ * @property getName - A function that returns the name of the operation.
  */
 export interface AtomValue {
   content: any;
@@ -19,4 +20,5 @@ export interface AtomValue {
   toString(verbose?: boolean): string;
   validateChild(child: AtomValue): void;
   marshall(): string;
+  getName(): string;
 }

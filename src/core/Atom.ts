@@ -70,7 +70,7 @@ export default class Atom {
     }${ATOM_STR_SEPARATOR}${
       this.cause.marshall()
     }${ATOM_STR_SEPARATOR}${
-      this.value.constructor.name
+      this.value.getName()
     }${ATOM_STR_SEPARATOR}${
       this.value.marshall()
     }`;

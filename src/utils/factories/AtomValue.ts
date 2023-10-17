@@ -34,6 +34,10 @@ export class ConcreteAtomValue implements AtomValue {
   validateChild(child: AtomValue): void {
     throw new Error(`Invalid child type for AtomValue operation: ${child.constructor.name}`);
   }
+
+  getName(): string {
+    return 'ConcreteAtomValue';
+  }
 }
 
 export default (

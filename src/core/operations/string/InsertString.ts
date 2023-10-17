@@ -33,4 +33,8 @@ export class InsertString implements AtomValue {
 
     throw new Error(`Invalid child type for InsertString operation: ${child.constructor.name}`);
   }
+
+  getName(): string {
+    return 'InsertString';
+  }
 }

@@ -27,4 +27,8 @@ export class Delete implements AtomValue {
   validateChild(child: AtomValue): void {
     throw new Error(`Invalid child type for Delete operation: ${child.constructor.name}`);
   }
+
+  getName(): string {
+    return 'Delete';
+  }
 }

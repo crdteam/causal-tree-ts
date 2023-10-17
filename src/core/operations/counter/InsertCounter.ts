@@ -33,4 +33,8 @@ export class InsertCounter implements AtomValue {
 
     throw new Error(`Invalid child type for InsertCounter operation: ${child.constructor.name}`);
   }
+
+  getName(): string {
+    return 'InsertCounter';
+  }
 }
