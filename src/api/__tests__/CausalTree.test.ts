@@ -15,16 +15,13 @@ describe('CausalTree', () => {
       expect(str).toBeDefined();
       expect(ct.toString()).toEqual(['']);
     });
-    it('should ignore and clear previous content', () => {
+    it('should throw if there are any previous content', () => {
       const ct = new CausalTree();
       const strCur = ct.setString().getCursor();
       strCur.insert('a');
       strCur.insert('b');
 
-      const newStr = ct.setString();
-
-      expect(newStr).toBeDefined();
-      expect(ct.toString()).toEqual(['']);
+      expect(() => ct.setString()).toThrow();
     });
   });
   describe('toString', () => {
@@ -121,6 +118,16 @@ describe('CausalTree', () => {
       ct2.mergeString(forkStr);
 
       expect(ct2.toString()).toEqual(['ab']);
+    });
+  });
+  describe('unmarshall', () => {
+    it('should unmarshall an empty tree', () => {
+      const ct = new CausalTree();
+      const str = ct.forkString();
+
+      const ct2 = new CausalTree();
+      expect(() => ct2.unmarshallInplace(str)).not.toThrow();
+      expect(ct2.toString()).toEqual([]);
     });
   });
 });
