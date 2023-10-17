@@ -3,7 +3,7 @@ import CausalTreeCore from '../core/CausalTree';
 import TreePosition from '../core/TreePosition';
 import { InsertString } from '../core/operations/string/InsertString';
 import { Register } from './Register';
-import { Str } from './Str';
+import { Str, StrCursor } from './Str';
 import { Value } from './Value';
 
 /**
@@ -28,6 +28,21 @@ export default class CausalTree implements Register {
   setString(): Str {
     const id = this.tree.insertString();
     return this.stringValue(id);
+  }
+
+  /**
+   * Assumes that the first atom in the weave is an InsertString and returns a
+   * Str cursor to it.
+   * @returns a Str cursor to the current string.
+   */
+  getStrCursor(): StrCursor {
+    const firstAtom = this.tree.weave[0];
+    if (!firstAtom) throw new Error('No atoms in weave');
+    if (!(firstAtom.value instanceof InsertString)) {
+      throw new Error('First atom is not an InsertString');
+    }
+
+    return this.stringValue(firstAtom.id).getCursor();
   }
 
   toString(): any[] {
