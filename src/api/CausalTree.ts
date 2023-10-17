@@ -50,6 +50,13 @@ export default class CausalTree implements Register {
   }
 
   /**
+   * @returns the current CausalTree as a string.
+   */
+  marshall(): string {
+    return this.tree.marshall();
+  }
+
+  /**
    * Forks the current CausalTree, returning a new tree.
    */
   fork(): CausalTree {
