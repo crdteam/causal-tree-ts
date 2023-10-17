@@ -17,6 +17,14 @@ export default class CausalTree implements Register {
     this.tree = tree;
   }
 
+  /**
+   * @returns a new CausalTree from the given string.
+   */
+  static unmarshall(str: string): CausalTree {
+    const tree = CausalTreeCore.unmarshall(str);
+    return new CausalTree(tree);
+  }
+
   setString(): Str {
     const id = this.tree.insertString();
     return this.stringValue(id);
@@ -54,6 +62,14 @@ export default class CausalTree implements Register {
    */
   marshall(): string {
     return this.tree.marshall();
+  }
+
+  /**
+   * Parses a CausalTree string and replaces the current tree with it.
+   */
+  unmarshallInplace(str: string): void {
+    const tree = CausalTreeCore.unmarshall(str);
+    this.tree = tree;
   }
 
   /**
