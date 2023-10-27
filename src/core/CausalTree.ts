@@ -27,15 +27,15 @@ const findSiteIndex = (sitemap: string[], siteUuid: string): number => {
 };
 
 export default class CausalTree {
-  siteIdx: number;
-
-  sitemap: string[];
-
-  timestamp: number;
-
   weave: Atom[];
 
-  yarns: Atom[][];
+  private sitemap: string[];
+
+  private timestamp: number;
+
+  private yarns: Atom[][];
+
+  private siteIdx: number;
 
   constructor() {
     const siteUuid = getNewUuid();
@@ -46,14 +46,14 @@ export default class CausalTree {
     this.yarns = [[]];
   }
 
+  getAtom(atomID: AtomId): Atom {
+    return this.yarns[atomID.site][atomID.index];
+  }
+
   getAtomIndexAtWeave(atomID: AtomId): number {
     if (atomID.timestamp === 0) return -1;
     const idx = this.weave.findIndex((atom) => atom.id === atomID);
     return idx === -1 ? this.weave.length : idx;
-  }
-
-  getAtom(atomID: AtomId): Atom {
-    return this.yarns[atomID.site][atomID.index];
   }
 
   /**
@@ -67,25 +67,26 @@ export default class CausalTree {
   }
 
   /**
-   * Inserts an atom at the end of given site's yarn.
-   *
-   * Time complexity of O(yarn.length).
-   * @param site - index of the site in the sitemap
-   */
+     * Inserts an atom at the end of given site's yarn.
+     *
+     * Time complexity of O(yarn.length).
+     * @param site - index of the site in the sitemap
+     */
   insertAtomAtYarn(atom: Atom, site: number): void {
     this.yarns[site].push(atom);
   }
 
   /**
-   * Inserts an atom in the weave given its cause atom id (former insertAtomAtCursor).
-   *
-   * Time complexity of O(weave.length + (avg. block size)).
-   */
-  insertChildAtom(atom: Atom, cause: AtomId): void {
+     * Inserts an atom in the weave given its cause atom id (former insertAtomAtCursor).
+     *
+     * Time complexity of O(weave.length + (avg. block size)).
+     * @returns index of the inserted atom in the weave.
+     */
+  insertChildAtom(atom: Atom, cause: AtomId): number {
     const causeIdx = this.getAtomIndexAtWeave(cause);
     if (causeIdx === -1) {
       this.insertAtomAtWeave(atom, 0);
-      return;
+      return -1;
     }
 
     if (causeIdx === this.weave.length) {
@@ -93,14 +94,14 @@ export default class CausalTree {
     }
 
     /** Search for position in weave that atom should be inserted, in a way that
-    * it's sorted relative to other children in descending order.
-    *
-    *                                   causal block of cursor
-    *                       ------------------------------------------------
-    *  Weave:           ... [cursor] [child1] ... [child2] ... [child3] ... [not child]
-    *  Block indices:           0         1          c2'          c3'           end'
-    *  Weave indices:          c0        c1          c2           c3            end
-    */
+      * it's sorted relative to other children in descending order.
+      *
+      *                                   causal block of cursor
+      *                       ------------------------------------------------
+      *  Weave:           ... [cursor] [child1] ... [child2] ... [child3] ... [not child]
+      *  Block indices:           0         1          c2'          c3'           end'
+      *  Weave indices:          c0        c1          c2           c3            end
+      */
     let pos = 0;
     let len = 0;
     walkCausalBlock(this.weave.slice(causeIdx), (a: Atom) => {
@@ -118,14 +119,16 @@ export default class CausalTree {
       ? causeIdx + pos
       : causeIdx + len + 1;
     this.insertAtomAtWeave(atom, index);
+    return index;
   }
 
   /**
    * Creates and inserts a new atom in the weave (former addAtom).
    *
    * Time complexity of O(weave.length + log(sitemap.length)).
+   * @returns id and index of the inserted atom.
    */
-  insertAtomFromValue(value: AtomValue, cause: AtomId): AtomId {
+  insertAtomFromValue(value: AtomValue, cause: AtomId): [AtomId, number] {
     this.timestamp += 1;
     if (this.timestamp === 0) throw new Error('Timestamp overflow');
 
@@ -137,9 +140,9 @@ export default class CausalTree {
 
     const atomId = new AtomId(this.siteIdx, this.yarns[this.siteIdx].length, this.timestamp);
     const atom = new Atom(atomId, cause, value);
-    this.insertChildAtom(atom, cause);
+    const index = this.insertChildAtom(atom, cause);
     this.insertAtomAtYarn(atom, this.siteIdx);
-    return atomId;
+    return [atomId, index];
   }
 
   /**
@@ -147,9 +150,10 @@ export default class CausalTree {
    * @returns id of the inserted atom
    */
   insertString(): AtomId {
+    this.clean();
     const root = new AtomId(0, 0, 0);
     const insertStr = new InsertString();
-    const id = this.insertAtomFromValue(insertStr, root);
+    const [id] = this.insertAtomFromValue(insertStr, root);
     return id;
   }
 
@@ -158,9 +162,10 @@ export default class CausalTree {
    * @returns id of the inserted atom
    */
   insertCounter(): AtomId {
+    this.clean();
     const root = new AtomId(0, 0, 0);
     const insertCtr = new InsertCounter();
-    const id = this.insertAtomFromValue(insertCtr, root);
+    const [id] = this.insertAtomFromValue(insertCtr, root);
     return id;
   }
 
@@ -235,5 +240,13 @@ export default class CausalTree {
     }
 
     return elements;
+  }
+
+  /**
+   * Clears the tree weave and yarns.
+   */
+  clean(): void {
+    this.weave = [];
+    this.yarns = [[]];
   }
 }

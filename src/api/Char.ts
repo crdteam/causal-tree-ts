@@ -1,7 +1,7 @@
 import TreePosition from '../core/TreePosition';
 import { Value } from './Value';
 
-export class String implements Value {
+export default class Char implements Value {
   treePosition: TreePosition;
 
   constructor(treePosition: TreePosition) {
@@ -9,7 +9,7 @@ export class String implements Value {
   }
 
   snapshot(): string {
-    const idx = this.treePosition.getIndex();
-    return `String(${idx})`;
+    const atom = this.treePosition.getAtom();
+    return atom.value.toString();
   }
 }

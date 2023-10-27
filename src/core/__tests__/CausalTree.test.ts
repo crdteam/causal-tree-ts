@@ -38,20 +38,20 @@ describe('CausalTree', () => {
     it('should get the final value of a string weave', () => {
       const tree = new CausalTree();
       const id1 = tree.insertString();
-// [str]:id1 -- c:id6
-//   '- a:id2 -- r:id7 -- ' ':id9
-//      |        '- s:id8
-//      '- t:id3 -- o:id4 -- r:id10
-//                  '- m:id5
-      const id2 = tree.insertAtomFromValue(new InsertChar('a'), id1);
-      const id3 = tree.insertAtomFromValue(new InsertChar('t'), id2);
-      const id4 = tree.insertAtomFromValue(new InsertChar('o'), id3);
-      const id5 = tree.insertAtomFromValue(new InsertChar('m'), id4);
-      const id6 = tree.insertAtomFromValue(new InsertChar('c'), id1);
-      const id7 = tree.insertAtomFromValue(new InsertChar('r'), id2);
-      const id8 = tree.insertAtomFromValue(new InsertChar('s'), id7);
-      const id9 = tree.insertAtomFromValue(new InsertChar(' '), id7);
-      const id10 = tree.insertAtomFromValue(new InsertChar('r'), id4);
+      // [str]:id1 -- c:id6
+      //   '- a:id2 -- r:id7 -- ' ':id9
+      //      |        '- s:id8
+      //      '- t:id3 -- o:id4 -- r:id10
+      //                  '- m:id5
+      const [id2] = tree.insertAtomFromValue(new InsertChar('a'), id1);
+      const [id3] = tree.insertAtomFromValue(new InsertChar('t'), id2);
+      const [id4] = tree.insertAtomFromValue(new InsertChar('o'), id3);
+      const [id5] = tree.insertAtomFromValue(new InsertChar('m'), id4);
+      const [id6] = tree.insertAtomFromValue(new InsertChar('c'), id1);
+      const [id7] = tree.insertAtomFromValue(new InsertChar('r'), id2);
+      const [id8] = tree.insertAtomFromValue(new InsertChar('s'), id7);
+      const [id9] = tree.insertAtomFromValue(new InsertChar(' '), id7);
+      const [id10] = tree.insertAtomFromValue(new InsertChar('r'), id4);
 
       expect(tree.toString()[0]).toEqual('car storm');
     });
@@ -59,15 +59,15 @@ describe('CausalTree', () => {
       const tree = new CausalTree();
       const id1 = tree.insertCounter();
 
-      const id2 = tree.insertAtomFromValue(new InsertAdd(1), id1);
-      const id3 = tree.insertAtomFromValue(new InsertAdd(-2), id2);
-      const id4 = tree.insertAtomFromValue(new InsertAdd(3), id3);
-      const id5 = tree.insertAtomFromValue(new InsertAdd(4), id4);
-      const id6 = tree.insertAtomFromValue(new InsertAdd(-5), id1);
-      const id7 = tree.insertAtomFromValue(new InsertAdd(6), id2);
-      const id8 = tree.insertAtomFromValue(new InsertAdd(-7), id7);
-      const id9 = tree.insertAtomFromValue(new InsertAdd(-8), id7);
-      const id10 = tree.insertAtomFromValue(new InsertAdd(9), id4);
+      const [id2] = tree.insertAtomFromValue(new InsertAdd(1), id1);
+      const [id3] = tree.insertAtomFromValue(new InsertAdd(-2), id2);
+      const [id4] = tree.insertAtomFromValue(new InsertAdd(3), id3);
+      const [id5] = tree.insertAtomFromValue(new InsertAdd(4), id4);
+      const [id6] = tree.insertAtomFromValue(new InsertAdd(-5), id1);
+      const [id7] = tree.insertAtomFromValue(new InsertAdd(6), id2);
+      const [id8] = tree.insertAtomFromValue(new InsertAdd(-7), id7);
+      const [id9] = tree.insertAtomFromValue(new InsertAdd(-8), id7);
+      const [id10] = tree.insertAtomFromValue(new InsertAdd(9), id4);
 
       expect(tree.toString()[0]).toEqual(1);
     });
@@ -85,9 +85,9 @@ describe('CausalTree', () => {
     it('should delete the correct atom', () => {
       const tree = new CausalTree();
       const id1 = tree.insertString();
-      const id2 = tree.insertAtomFromValue(new InsertChar('a'), id1);
-      const id3 = tree.insertAtomFromValue(new InsertChar('t'), id1);
-      const id4 = tree.insertAtomFromValue(new InsertChar('i'), id1);
+      const [id2] = tree.insertAtomFromValue(new InsertChar('a'), id1);
+      const [id3] = tree.insertAtomFromValue(new InsertChar('t'), id1);
+      const [id4] = tree.insertAtomFromValue(new InsertChar('i'), id1);
 
       tree.deleteAtom(id2);
 
@@ -122,7 +122,7 @@ describe('CausalTree', () => {
     it('should allow more than one delete to an atom', () => {
       const tree = new CausalTree();
       const id1 = tree.insertString();
-      const id2 = tree.insertAtomFromValue(new InsertChar('a'), id1);
+      const [id2] = tree.insertAtomFromValue(new InsertChar('a'), id1);
       tree.insertAtomFromValue(new InsertChar('t'), id1);
       tree.insertAtomFromValue(new InsertChar('i'), id1);
 
@@ -150,15 +150,15 @@ describe('CausalTree', () => {
     it('should allow multiple deletions consistently', () => {
       const tree = new CausalTree();
       const id1 = tree.insertString();
-      const id2 = tree.insertAtomFromValue(new InsertChar('c'), id1);
-      const id3 = tree.insertAtomFromValue(new InsertChar('r'), id2);
-      const id4 = tree.insertAtomFromValue(new InsertChar('d'), id3);
-      const id5 = tree.insertAtomFromValue(new InsertChar('t'), id4);
-// [str]:id1 -- o
-//   '- c:id2 -- [del]
-//      '- r:id3 -- m
-//         '- d:id4 -- [del]
-//            '- t:id5 -- [del]
+      // [str]:id1 -- o
+      //   '- c:id2 -- [del]
+      //      '- r:id3 -- m
+      //         '- d:id4 -- [del]
+      //            '- t:id5 -- [del]
+      const [id2] = tree.insertAtomFromValue(new InsertChar('c'), id1);
+      const [id3] = tree.insertAtomFromValue(new InsertChar('r'), id2);
+      const [id4] = tree.insertAtomFromValue(new InsertChar('d'), id3);
+      const [id5] = tree.insertAtomFromValue(new InsertChar('t'), id4);
       tree.deleteAtom(id2);
       tree.insertAtomFromValue(new InsertChar('o'), id1);
       tree.deleteAtom(id4);
