@@ -65,118 +65,72 @@ yarn test:coverage
 
 ## Diagrams
 
-### Interface base structure
-
-```mermaid
-classDiagram
-    class Container
-    <<interface>> Container
-    Container: Len() int 
-    Container: Cursor() Cursor
-    
-    class Value
-    <<interface>> Value
-    Value: Snapshot()
-
-    class String
-    Container <|.. String
-    Value <|.. String
-    String: Snapshot() str
-    
-    class List
-    Container <|.. List
-    Value <|.. List
-    List: Snapshot() any[ ]
-    
-    class CausalTree
-    Register <|.. CausalTree
-
-    class Cursor
-    <<interface>> Cursor
-    Cursor: Index(int i)
-    Cursor: Delete()
-    
-    class Register
-    <<interface>> Register
-    Register: SetString() String
-    Register: SetCounter() Counter
-    Register: SetList() List
-    Register: Clear()
-    Register: Value() Value
-
-    class Char
-    Char: char ch
-    
-    class StringCursor
-    Cursor <|.. StringCursor
-    StringCursor: Insert(char ch) Char
-    StringCursor: Value() Char
-    
-    class ListCursor
-    Cursor <|.. ListCursor
-    ListCursor: Insert() ListElement
-    ListCursor: Value() ListElement
-    
-    class ListElement
-    Register <|.. ListElement
-    
-    class Counter
-    Value <|.. Counter
-    Counter: Snapshot() int
-    Counter: Increment(int x)
-    Counter: Decrement(int x)
-```
-
-#### Interface classes relations
+### Interface structure and relations
 
 ```mermaid
 classDiagram    
-    class ListElement
-    ListCursor ..> ListElement
-    ListElement: SetString() String
-    ListElement: SetCounter() Counter
-    ListElement: SetList() List
+    class Value
+    <<interface>> Value
+    Value: snapshot()
 
-    class String
-    String <.. ListElement
-    String: Cursor() StringCursor
-
-    class List
-    List <.. ListElement
-    List: Cursor() ListCursor
-
-    class Counter
-    Counter <.. ListElement
-
+    class Str
+    Container <|.. Str
+    Value <|.. Str
+    Str ..> StrCursor
+    Str: snapshot() str
+    Str: length() int
+    Str: walkChars(func callback)
+    Str: isDeleted() bool
+    Str: getCursor() StrCursor
+    
     class CausalTree
-    CausalTree .. String
-    CausalTree .. Counter
-    CausalTree .. List
-    CausalTree: SetString() String
-    CausalTree: SetCounter() Counter
-    CausalTree: SetList() List
-  
-    class StringCursor 
-    String ..> StringCursor
-    StringCursor: Insert(rune ch) Char
-    StringCursor: Value() Char
-    
-    class ListCursor
-    List ..> ListCursor
-    ListCursor: Insert() ListElement
-    ListCursor: Value() ListElement
-    
-    class Char
-    StringCursor ..> Char
+    Register <|.. CausalTree
+    Str .. CausalTree
+    CausalTree: unmarshall(str data) CausalTree
+    CausalTree: unmarshallInplace(str data) CausalTree
+    CausalTree: marshall() str
+    CausalTree: fork() CausalTree
+    CausalTree: forkString() str
+    CausalTree: mergeString(str data)
+    CausalTree: setString() 
+    CausalTree: getStrCursor() StrCursor
+    CausalTree: deleteString(Str string)
 
+    class Cursor
+    <<interface>> Cursor
+    Cursor: index(int i)
+    Cursor: delete()
+    Cursor: insert(any ch) any
+    Cursor: element() any
+    
+    class Register
+    <<interface>> Register
+    Register: setString() Str
+    Register: clear()
+    Register: value() Value
+
+    class Char
+    Char: snapshot() str
+    
+    class StrCursor
+    Cursor <|.. StrCursor
+    StrCursor ..> Char
+    StrCursor: insert(str ch) Char
+    StrCursor: getString() Str
+    StrCursor: index(int i)
+    StrCursor: delete()
+    StrCursor: element() str
 ```
 
 ### Core structure
 
 ```mermaid
 classDiagram
+    Delete ..|> AtomValue
     Atom *-- AtomId
     CausalTree *-- Atom
+    InsertStr ..|> AtomValue
+    InsertChar ..|> AtomValue
     CausalTree <-- TreePosition
     TreePosition --> AtomId
     IndexMap .. Atom
@@ -188,40 +142,75 @@ classDiagram
       Atom[ ] weave
       Atom[ ][ ] yarns
       int timestamp
-      getAtom(AtomId id): Atom
+      getAtom(AtomId id) Atom
       insertAtom(Atom atom, int pos)
-      fork(): CausalTree
+      fork() CausalTree
       merge(CausalTree other)
     }
 
     class Atom {
       AtomId id
       AtomId cause
-      Value val
+      AtomValue value
       int tag
-      compare(Atom other): int
-      remapSite(IndexMap map): Atom
-      
+      compare(Atom other) int
+      remapSite(IndexMap map) Atom
+      remapSiteInplace(IndexMap map)
+      unmarshall(str data) Atom
+      marshall() str
     }
 
     class AtomId {
       int site
       int index
       int timestamp
-      compare(AtomId other): int
-      remapSite(IndexMap map): AtomId
-      toString(): str
+      compare(AtomId other) int
+      remapSite(IndexMap map) AtomId
+      remapSiteInplace(IndexMap map)
+      toString() str
+      unmarshall(str data) AtomId
+      marshall() str
     }
+
+    class AtomValue {
+      <<interface>>
+      content
+      int priority
+      toString(bool verbose) str
+      validateChild(AtomValue child) bool
+      marshall() str
+      unmarshall(str data) AtomValue
+      getName() str
+    }
+
+    class InsertStr
+
+    class InsertChar 
+
+    class Delete
 
     class TreePosition {
       CausalTree tree
       AtomId atomId
       lastKnownPos int
+      getIndex() int
+      getAtom() Atom
+      getAtomAtIndex(int index) Atom
+      getTree() CausalTree
+      isDeleted() bool
+      walk(func callback) void
     }
 
     class IndexMap {
       dict map
-      get(int index): int
+      get(int index) int
       set(int index, int value)
+      length() int
     }
+
+    %% class InsertCounter
+    %% InsertCounter ..|> AtomValue
+
+    %% class InsertAdd
+    %% InsertAdd ..|> AtomValue
 ```
