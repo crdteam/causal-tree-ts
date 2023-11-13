@@ -1,7 +1,7 @@
 import AtomId from '../core/AtomId';
 import CausalTreeCore from '../core/CausalTree';
 import TreePosition from '../core/TreePosition';
-import InsertString from '../core/operations/string/InsertString';
+import { InsertString } from '../core/operations/string/InsertString';
 import { Register } from './Register';
 import { Str } from './Str';
 import { Value } from './Value';
@@ -55,6 +55,22 @@ export default class CausalTree implements Register {
   fork(): CausalTree {
     const fork = new CausalTree(this.tree.fork());
     return fork;
+  }
+
+  /**
+   * Forks the current CausalTree into a new tree string.
+   */
+  forkString(): string {
+    const forkedCore = this.tree.fork();
+    return forkedCore.marshall();
+  }
+
+  /**
+   * Parses a CausalTree string and merges it into the current tree.
+   */
+  mergeString(str: string): void {
+    const tree = CausalTreeCore.unmarshall(str);
+    this.tree.merge(tree);
   }
 
   /**

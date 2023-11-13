@@ -1,7 +1,7 @@
 import { OPERATION_PRIORITY_MAP } from '../../utils/constants';
 import { AtomValue } from '../AtomValue';
 
-export default class Delete implements AtomValue {
+export class Delete implements AtomValue {
   content: null;
 
   priority: number;
@@ -9,6 +9,14 @@ export default class Delete implements AtomValue {
   constructor() {
     this.content = null;
     this.priority = OPERATION_PRIORITY_MAP.Delete;
+  }
+
+  static unmarshall(str: string): Delete {
+    return new Delete();
+  }
+
+  marshall(): string {
+    return '';
   }
 
   toString(verbose = false): string {

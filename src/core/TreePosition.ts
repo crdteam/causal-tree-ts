@@ -2,7 +2,7 @@ import { walkCausalBlockNoDelete } from '../utils/functions';
 import Atom from './Atom';
 import AtomId from './AtomId';
 import CausalTree from './CausalTree';
-import Delete from './operations/Delete';
+import { Delete } from './operations/Delete';
 
 /**
  * TreePosition stores an atom's position for a cursor.

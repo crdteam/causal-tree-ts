@@ -1,9 +1,9 @@
 import CausalTree from '../CausalTree';
-import Delete from '../operations/Delete';
-import InsertAdd from '../operations/counter/InsertAdd';
-import InsertCounter from '../operations/counter/InsertCounter';
-import InsertChar from '../operations/string/InsertChar';
-import InsertString from '../operations/string/InsertString';
+import { Delete } from '../operations/Delete';
+import { InsertAdd } from '../operations/counter/InsertAdd';
+import { InsertCounter } from '../operations/counter/InsertCounter';
+import { InsertChar } from '../operations/string/InsertChar';
+import { InsertString } from '../operations/string/InsertString';
 
 describe('CausalTree', () => {
   describe('insertString', () => {
@@ -300,6 +300,60 @@ describe('CausalTree', () => {
       expect(tree.sitemap.length).toEqual(2);
       expect(forked.toString()).toEqual(['etc']);
       expect(tree.toString()).toEqual(['ita']);
+    });
+  });
+  describe('(un)marshall', () => {
+    it('should marshall and unmarshall properly a single CT', () => {
+      const tree = new CausalTree();
+      const id1 = tree.insertString();
+      const [id2] = tree.insertAtomFromValue(new InsertChar('a'), id1);
+      tree.insertAtomFromValue(new InsertChar('t'), id1);
+      tree.insertAtomFromValue(new InsertChar('i'), id1);
+
+      const marshalled = tree.marshall();
+      const unmarshalled = CausalTree.unmarshall(marshalled);
+
+      expect(unmarshalled.sitemap.length).toEqual(1);
+      expect(unmarshalled.yarns.length).toEqual(1);
+      expect(unmarshalled.siteIdx).toEqual(tree.siteIdx);
+      expect(unmarshalled.sitemap).toEqual(tree.sitemap);
+      expect(unmarshalled.weave).toEqual(tree.weave);
+      expect(unmarshalled.yarns).toEqual(tree.yarns);
+      unmarshalled.yarns.forEach((yarn, i) => {
+        expect(yarn).toEqual(tree.yarns[i]);
+      });
+      expect(unmarshalled.toString()).toEqual(['ita']);
+      expect(() => unmarshalled.insertAtomFromValue(new Delete(), id2)).not.toThrow();
+      expect(unmarshalled.toString()).toEqual(['it']);
+    });
+    it('should marshall and unmarshall a merged CT', () => {
+      const baseTree = new CausalTree();
+      const id1 = baseTree.insertString();
+      const tree1 = baseTree.fork();
+      const [id2] = tree1.insertAtomFromValue(new InsertChar('i'), id1);
+      const [id3] = tree1.insertAtomFromValue(new InsertChar('t'), id2);
+      tree1.insertAtomFromValue(new InsertChar('a'), id3);
+      const tree2 = baseTree.fork();
+      const [id4] = tree2.insertAtomFromValue(new InsertChar('c'), id1);
+      const [id5] = tree2.insertAtomFromValue(new InsertChar('o'), id4);
+
+      tree1.merge(tree2);
+
+      const marshalled = tree1.marshall();
+      const unmarshalled = CausalTree.unmarshall(marshalled);
+
+      expect(unmarshalled.sitemap.length).toEqual(3);
+      expect(unmarshalled.yarns.length).toEqual(3);
+      expect(unmarshalled.siteIdx).toEqual(tree1.siteIdx);
+      expect(unmarshalled.sitemap).toEqual(tree1.sitemap);
+      expect(unmarshalled.weave).toEqual(tree1.weave);
+      expect(unmarshalled.yarns).toEqual(tree1.yarns);
+      unmarshalled.yarns.forEach((yarn, i) => {
+        expect(yarn).toEqual(tree1.yarns[i]);
+      });
+      expect(unmarshalled.toString()).toEqual(['coita']);
+      expect(() => unmarshalled.insertAtomFromValue(new InsertChar('c'), id5)).not.toThrow();
+      expect(unmarshalled.toString()).toEqual(['cocita']);
     });
   });
 });

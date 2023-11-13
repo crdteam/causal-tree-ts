@@ -3,9 +3,22 @@ import AtomId from './AtomId';
 import IndexMap from './IndexMap';
 import { causalBlockLength, getNewUuid, isContainer, walkCausalBlock } from '../utils/functions';
 import { AtomValue } from './AtomValue';
-import InsertString from './operations/string/InsertString';
-import Delete from './operations/Delete';
-import InsertCounter from './operations/counter/InsertCounter';
+import { InsertString } from './operations/string/InsertString';
+import { Delete } from './operations/Delete';
+import { InsertCounter } from './operations/counter/InsertCounter';
+
+const WEAVE_STR_SEPARATOR = '->';
+
+/**
+ * CausalTreePrototype is a base type for CausalTree.
+ */
+interface CausalTreePrototype {
+  weave: Atom[];
+  sitemap: string[];
+  timestamp: number;
+  yarns: Atom[][];
+  siteIdx: number;
+}
 
 /**
  * Returns the index where a site is (or should be) in the sitemap.
@@ -37,7 +50,16 @@ export default class CausalTree {
 
   siteIdx: number;
 
-  constructor() {
+  constructor(proto?: CausalTreePrototype) {
+    if (proto) {
+      this.weave = proto.weave;
+      this.sitemap = proto.sitemap;
+      this.timestamp = proto.timestamp;
+      this.yarns = proto.yarns;
+      this.siteIdx = proto.siteIdx;
+      return;
+    }
+
     const siteUuid = getNewUuid();
     this.siteIdx = 0;
     this.sitemap = [siteUuid];
@@ -46,13 +68,43 @@ export default class CausalTree {
     this.yarns = [[]];
   }
 
+  static unmarshall(str: string): CausalTree {
+    const {
+      weave: weaveStr,
+      yarns: yarnsStrs,
+      sitemap,
+      timestamp,
+      siteIdx,
+    } = JSON.parse(str);
+    const weave = weaveStr
+      .split(WEAVE_STR_SEPARATOR)
+      .map((atomStr: string) => Atom.unmarshall(atomStr));
+    const yarns = yarnsStrs.map((yarnStr: string) => (
+      yarnStr === ''
+        ? []
+        : yarnStr
+          .split(WEAVE_STR_SEPARATOR)
+          .map((atomStr: string) => Atom.unmarshall(atomStr))
+    ));
+
+    return new CausalTree({
+      weave,
+      yarns,
+      sitemap,
+      timestamp,
+      siteIdx,
+    });
+  }
+
   getAtom(atomID: AtomId): Atom {
     return this.yarns[atomID.site][atomID.index];
   }
 
   getAtomIndexAtWeave(atomID: AtomId): number {
     if (atomID.timestamp === 0) return -1;
-    const idx = this.weave.findIndex((atom) => atom.id === atomID);
+    const idx = this.weave.findIndex((atom) => (
+      AtomId.compare(atom.id, atomID) === 0
+    ));
     return idx === -1 ? this.weave.length : idx;
   }
 
@@ -457,5 +509,23 @@ export default class CausalTree {
     this.weave = mergedWeave;
     if (remote.timestamp > this.timestamp) this.timestamp = remote.timestamp;
     this.timestamp += 1;
+  }
+
+  marshallAtoms(atoms: Atom[]): string {
+    return atoms
+      .map((atom) => atom.marshall())
+      .join(WEAVE_STR_SEPARATOR);
+  }
+
+  marshall(): string {
+    const weaveStr = this.marshallAtoms(this.weave);
+    const yarnsStrs = this.yarns.map((yarn) => this.marshallAtoms(yarn));
+    return JSON.stringify({
+      weave: weaveStr,
+      yarns: yarnsStrs,
+      sitemap: this.sitemap,
+      timestamp: this.timestamp,
+      siteIdx: this.siteIdx,
+    });
   }
 }
